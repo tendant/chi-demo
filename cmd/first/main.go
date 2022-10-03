@@ -12,8 +12,7 @@ func main() {
 	r := chi.NewRouter()
 	r.Use(middleware.Logger)
 	r.Get("/", func(w http.ResponseWriter, r *http.Request) {
-		// w.Write([]byte("welcome2"))
-		render.PlainText(w, r, "hello5")
+		render.PlainText(w, r, "welcome")
 	})
 	http.ListenAndServe("localhost:3000", r)
 }
