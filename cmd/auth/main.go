@@ -58,7 +58,7 @@ func main() {
 }
 
 func checkUserSomehow(user string, password string) (bool, error) {
-	log.Default()
+	log.Printf("Login with: %s, %s.", user, password)
 	if user == "user1" && password == "pass1" {
 		return true, nil
 	}
