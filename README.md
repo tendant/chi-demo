@@ -1,5 +1,9 @@
 # chi-demo
 
+## Generate sqlc 
+
+    sqlc generate
+
 ## Database
 
 ### Start Postgres database
