@@ -1,0 +1,1 @@
+docker run -it --name psql -e POSTGRES_PASSWORD=pwd -p 15432:5432 postgres:14-alpine
