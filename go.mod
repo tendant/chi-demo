@@ -2,19 +2,22 @@ module github.com/tendant/chi-demo
 
 go 1.18
 
-require github.com/go-chi/chi/v5 v5.0.7
+require (
+	github.com/go-chi/chi/v5 v5.0.7
+	github.com/go-chi/render v1.0.2
+	github.com/go-pkgz/auth v1.19.1
+	github.com/google/uuid v1.3.0
+	github.com/lib/pq v1.10.7
+)
 
 require (
 	cloud.google.com/go/compute v1.10.0 // indirect
 	github.com/ajg/form v1.5.1 // indirect
 	github.com/aymerick/douceur v0.2.0 // indirect
 	github.com/dghubble/oauth1 v0.7.1 // indirect
-	github.com/go-chi/render v1.0.2 // indirect
 	github.com/go-oauth2/oauth2/v4 v4.5.1 // indirect
-	github.com/go-pkgz/auth v1.19.1 // indirect
 	github.com/go-pkgz/repeater v1.1.3 // indirect
 	github.com/go-pkgz/rest v1.16.0 // indirect
-	github.com/go-stack/stack v1.8.1 // indirect
 	github.com/golang-jwt/jwt v3.2.2+incompatible // indirect
 	github.com/golang/protobuf v1.5.2 // indirect
 	github.com/golang/snappy v0.0.4 // indirect
