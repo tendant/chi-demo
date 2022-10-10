@@ -5,7 +5,6 @@ go 1.18
 require (
 	github.com/go-chi/chi/v5 v5.0.7
 	github.com/go-chi/render v1.0.2
-	github.com/go-pkgz/auth v1.19.1
 	github.com/google/uuid v1.3.0
 	github.com/lib/pq v1.10.7
 )
@@ -14,8 +13,10 @@ require (
 	cloud.google.com/go/compute v1.10.0 // indirect
 	github.com/ajg/form v1.5.1 // indirect
 	github.com/aymerick/douceur v0.2.0 // indirect
+	github.com/coreos/go-oidc/v3 v3.4.0 // indirect
 	github.com/dghubble/oauth1 v0.7.1 // indirect
 	github.com/go-oauth2/oauth2/v4 v4.5.1 // indirect
+	github.com/go-pkgz/auth v1.20.0 // indirect
 	github.com/go-pkgz/repeater v1.1.3 // indirect
 	github.com/go-pkgz/rest v1.16.0 // indirect
 	github.com/golang-jwt/jwt v3.2.2+incompatible // indirect
@@ -42,4 +43,5 @@ require (
 	golang.org/x/text v0.3.7 // indirect
 	google.golang.org/appengine v1.6.7 // indirect
 	google.golang.org/protobuf v1.28.1 // indirect
+	gopkg.in/square/go-jose.v2 v2.6.0 // indirect
 )
