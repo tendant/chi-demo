@@ -22,7 +22,7 @@ var (
 	// clientID     = os.Getenv("GOOGLE_OAUTH2_CLIENT_ID")
 	// clientSecret = os.Getenv("GOOGLE_OAUTH2_CLIENT_SECRET")
 	clientID     = "demo-oidc"
-	clientSecret = "IOZRXi19TgLpVKgpx5cXyiST4kxiIm0B"
+	clientSecret = "CMqhkpZPOYkRtG52ahWWrwQoDnpwVH9k"
 )
 
 func randString(nByte int) (string, error) {
@@ -68,7 +68,7 @@ func main() {
 	// Auth
 	ctx := context.Background()
 
-	provider, err := oidc.NewProvider(ctx, "http://localhost:8080/realms/demo")
+	provider, err := oidc.NewProvider(ctx, "http://localhost:18080/realms/demo")
 	if err != nil {
 		log.Fatal(err)
 	}
