@@ -3,6 +3,7 @@ version: '3'
 services:
   keycloak:
     image: quay.io/keycloak/keycloak:19.0.3
+    container_name: keycloak
     ports:
       - "18080:8080"
     command:
