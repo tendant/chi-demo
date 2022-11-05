@@ -15,6 +15,7 @@ require (
 	github.com/aymerick/douceur v0.2.0 // indirect
 	github.com/coreos/go-oidc/v3 v3.4.0 // indirect
 	github.com/dghubble/oauth1 v0.7.1 // indirect
+	github.com/ggicci/httpin v0.10.1 // indirect
 	github.com/go-oauth2/oauth2/v4 v4.5.1 // indirect
 	github.com/go-pkgz/auth v1.20.0 // indirect
 	github.com/go-pkgz/repeater v1.1.3 // indirect
