@@ -8,7 +8,7 @@ objects = cmd/query/main
 all: $(objects)
 
 $(objects):
-	go build -ldflags $(LDFLAGS) $@.go
+	go build -ldflags $(LDFLAGS)  -o $@ $@.go
 
 dep:
 	go mod tidy
