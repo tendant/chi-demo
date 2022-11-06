@@ -1,8 +1,8 @@
-* Start server with air
+# Start server with air
 
     $ air
     
-* Test event with curl
+# Test event with curl
 
     curl --location --request POST 'localhost:3000' \
     --header 'ce-type: com.example.repro.create' \
