@@ -11,6 +11,7 @@ import (
 
 	cloudevents "github.com/cloudevents/sdk-go/v2"
 	"github.com/go-chi/chi/v5"
+	"github.com/go-chi/render"
 	"github.com/ilyakaznacheev/cleanenv"
 	"go.uber.org/zap"
 )
@@ -35,6 +36,9 @@ func main() {
 		Log: log,
 	}
 
+	router.Get("/", func(w http.ResponseWriter, r *http.Request) {
+		render.PlainText(w, r, http.StatusText(http.StatusOK))
+	})
 	router.Post("/", handle.HandleEvent)
 
 	addr := fmt.Sprintf("%s:%d", cfg.Host, cfg.Port)
