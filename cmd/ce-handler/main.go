@@ -20,19 +20,13 @@ type Config struct {
 	Port int    `env:"PORT" env-default:"3000"`
 }
 
-type Handle struct {
-	Log *zap.Logger
-}
-
-type Proccess struct {
-	Log *zap.Logger
-}
-
 func main() {
 
+	// Configuration
 	var cfg Config
 	cleanenv.ReadEnv(&cfg)
 
+	// Logger
 	log, _ := zap.NewDevelopment()
 
 	router := chi.NewRouter()
@@ -40,6 +34,7 @@ func main() {
 	handle := Handle{
 		Log: log,
 	}
+
 	router.Post("/", handle.HandleEvent)
 
 	addr := fmt.Sprintf("%s:%d", cfg.Host, cfg.Port)
@@ -68,6 +63,10 @@ func main() {
 
 }
 
+type Handle struct {
+	Log *zap.Logger
+}
+
 func (handler *Handle) HandleEvent(w http.ResponseWriter, r *http.Request) {
 	handler.Log.Info("Handling event")
 	ce, err := cloudevents.NewEventFromHTTPRequest(r)
@@ -79,6 +78,10 @@ func (handler *Handle) HandleEvent(w http.ResponseWriter, r *http.Request) {
 	}
 	proccess.Receive(r.Context(), ce)
 
+}
+
+type Proccess struct {
+	Log *zap.Logger
 }
 
 func (proccess *Proccess) Receive(ctx context.Context, event *cloudevents.Event) {
