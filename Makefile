@@ -3,7 +3,7 @@ GIT_COMMIT_SHORT ?= noversion
 
 LDFLAGS = "-X main.Version=$(GIT_COMMIT)"
 
-objects = cmd/query/main
+objects = cmd/query/main cmd/server/main
 
 all: $(objects)
 
