@@ -11,6 +11,7 @@ require (
 
 require (
 	cloud.google.com/go/compute v1.10.0 // indirect
+	github.com/BurntSushi/toml v1.1.0 // indirect
 	github.com/ajg/form v1.5.1 // indirect
 	github.com/aymerick/douceur v0.2.0 // indirect
 	github.com/cloudevents/sdk-go/v2 v2.12.0 // indirect
@@ -25,6 +26,8 @@ require (
 	github.com/golang/protobuf v1.5.2 // indirect
 	github.com/golang/snappy v0.0.4 // indirect
 	github.com/gorilla/css v1.0.0 // indirect
+	github.com/ilyakaznacheev/cleanenv v1.4.0 // indirect
+	github.com/joho/godotenv v1.4.0 // indirect
 	github.com/json-iterator/go v1.1.10 // indirect
 	github.com/klauspost/compress v1.15.11 // indirect
 	github.com/microcosm-cc/bluemonday v1.0.20 // indirect
@@ -52,4 +55,6 @@ require (
 	google.golang.org/appengine v1.6.7 // indirect
 	google.golang.org/protobuf v1.28.1 // indirect
 	gopkg.in/square/go-jose.v2 v2.6.0 // indirect
+	gopkg.in/yaml.v3 v3.0.1 // indirect
+	olympos.io/encoding/edn v0.0.0-20201019073823-d3554ca0b0a3 // indirect
 )
