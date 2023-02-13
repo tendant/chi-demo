@@ -31,17 +31,6 @@ type App struct {
 	Log    *zap.Logger
 }
 
-func setCallbackCookie(w http.ResponseWriter, r *http.Request, name, value string) {
-	c := &http.Cookie{
-		Name:     name,
-		Value:    value,
-		MaxAge:   int(time.Hour.Seconds()),
-		Secure:   r.TLS != nil,
-		HttpOnly: true,
-	}
-	http.SetCookie(w, c)
-}
-
 func Default() *App {
 
 	// Configuration
@@ -84,7 +73,7 @@ func Default() *App {
 	// for more ideas, see: https://developer.github.com/v3/#cross-origin-resource-sharing
 	r.Use(cors.Handler(cors.Options{
 		// AllowedOrigins:   []string{"https://foo.com"}, // Use this to allow specific origin hosts
-		// AllowedOrigins: []string{"http://localhost:3000", "https://*.torpg.com"},
+		// AllowedOrigins: []string{"http://localhost:3000", "https://*.example.com"},
 		AllowedOrigins: []string{"https://*", "http://*"},
 		// AllowOriginFunc:  func(r *http.Request, origin string) bool { return true },
 		AllowedMethods:   []string{"GET", "POST", "PUT", "DELETE", "OPTIONS"},
