@@ -41,8 +41,22 @@ func (handle *Handle) DemoPost(w http.ResponseWriter, r *http.Request) {
 	render.PlainText(w, r, "DemoPost")
 }
 
+type DemoJsonInput struct {
+	httpin.JSONBody
+	Login    string `json:"login"`
+	Password string `json:"password"`
+}
+
+func (handle *Handle) DemoJson(w http.ResponseWriter, r *http.Request) {
+	handle.Log.Debug("Json...")
+	q := r.Context().Value(httpin.Input).(*DemoJsonInput)
+	handle.Log.Debug("Q:", zap.Any("q", q))
+	render.JSON(w, r, "OK")
+}
+
 func Routes(r *chi.Mux, handle Handle) {
 	r.Get("/demo", handle.Demo)
 	r.With(httpin.NewInput(QueryInput{})).Get("/query", handle.Query)
 	r.With(httpin.NewInput(DemoPostInput{})).Post("/post", handle.DemoPost)
+	r.With(httpin.NewInput(DemoJsonInput{})).Post("/json", handle.DemoJson)
 }

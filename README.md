@@ -67,3 +67,10 @@
 ### Form Params
 
     curl -i -F 'name=DemoName' localhost:4000/post
+    
+### Body Params
+
+    curl  -i "localhost:4000/json" -H 'Content-Type: application/json' -d '{"login":"my_login","password":"my_password"}'
+    
+    
+    
