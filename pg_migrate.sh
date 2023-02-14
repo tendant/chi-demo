@@ -2,10 +2,10 @@
 
 SOURCE_PATH=migrations/postgres
 SOURCE_URL=file://$SOURCE_PATH
-PG_USER=demo_project
+PG_USER=demo
 PG_PASSWORD=pwd
 PG_PORT=5432
-PG_NAME=demo_project_db
+PG_NAME=demo_db
 PG_DB_URL=postgres://"$PG_USER":"$PG_PASSWORD"@"$PG_HOST":"$PG_PORT"/"$PG_NAME"?sslmode=disable
 
 cd "$(dirname "$0")"

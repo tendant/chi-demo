@@ -11,7 +11,7 @@ import (
 
 func main() {
 	newApp := app.Default()
-	db, err := sql.Open("postgres", "host=localhost port=5432 user=inventory password=pwd dbname=inventory_db sslmode=disable")
+	db, err := sql.Open("postgres", "host=localhost port=5432 user=demo password=pwd dbname=demo_db sslmode=disable")
 	if err != nil {
 		panic("connect to database failed")
 	} else {
