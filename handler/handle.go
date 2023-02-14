@@ -1,17 +1,21 @@
 package handler
 
 import (
+	"database/sql"
 	"fmt"
 	"net/http"
 
 	"github.com/ggicci/httpin"
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/render"
+	"github.com/tendant/chi-demo/tutorial"
 	"go.uber.org/zap"
 )
 
 type Handle struct {
-	Log *zap.Logger
+	Log     *zap.Logger
+	DB      *sql.DB
+	Queries *tutorial.Queries
 }
 
 func (handle *Handle) Demo(w http.ResponseWriter, r *http.Request) {
