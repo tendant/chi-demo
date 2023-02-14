@@ -55,5 +55,15 @@
 
 ## Fix Dirty DB Migration
 
-    migrate -database ${DATABASE_URL}  -path migrations/postgres force <migration_file_name>
+    migrate -database ${DATABASE_URL**  -path migrations/postgres force <migration_file_name>
 
+
+## Test Params
+
+### Query Params
+
+    curl -i localhost:4000/query\?q=DemoQ
+    
+### Form Params
+
+    curl -i -F 'name=DemoName' localhost:4000/post
