@@ -72,5 +72,10 @@
 
     curl  -i "localhost:4000/json" -H 'Content-Type: application/json' -d '{"login":"my_login","password":"my_password"}'
     
+
+### Body Json List Params
+
+    curl  -i "localhost:4000/json/list" -H 'Content-Type: application/json' -d '{"emails":["email1@test.com", "email2@test.com", "email3@example.com"]}'
     
+
     
