@@ -18,6 +18,8 @@ import (
 	"github.com/go-chi/render"
 	"github.com/ilyakaznacheev/cleanenv"
 	"github.com/prometheus/client_golang/prometheus/promhttp"
+	"github.com/rs/zerolog"
+	zerologl "github.com/rs/zerolog/log"
 	"go.uber.org/zap"
 
 	metrics "github.com/slok/go-http-metrics/metrics/prometheus"
@@ -29,6 +31,7 @@ type App struct {
 	R      *chi.Mux
 	Config AppConfig
 	Log    *zap.Logger
+	Zlog   zerolog.Logger
 }
 
 func Default() *App {
@@ -47,6 +50,8 @@ func Default() *App {
 		JSON: false,
 	})
 
+	zlog := zerologl.With().Str("service", "app")
+
 	httpin.UseGochiURLParam("path", chi.URLParam)
 
 	r := chi.NewRouter()
@@ -55,6 +60,7 @@ func Default() *App {
 		R:      r,
 		Config: appConfig,
 		Log:    log,
+		Zlog:   zlog.Logger(),
 	}
 
 	mdlw := metricsMiddleware.New(metricsMiddleware.Config{
