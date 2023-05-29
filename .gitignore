@@ -6,6 +6,8 @@
 *.dylib
 tmp/
 main
+gen/
+cmd/openapi
 
 # Test binary, built with `go test -c`
 *.test
