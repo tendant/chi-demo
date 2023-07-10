@@ -21,6 +21,7 @@ import (
 	"github.com/rs/zerolog"
 	zerologl "github.com/rs/zerolog/log"
 	"go.uber.org/zap"
+	"golang.org/x/exp/slog"
 
 	metrics "github.com/slok/go-http-metrics/metrics/prometheus"
 	metricsMiddleware "github.com/slok/go-http-metrics/middleware"
@@ -32,6 +33,7 @@ type App struct {
 	Config AppConfig
 	Log    *zap.Logger
 	Zlog   zerolog.Logger
+	Slog   *slog.Logger
 }
 
 func Default() *App {
@@ -41,6 +43,9 @@ func Default() *App {
 	cleanenv.ReadEnv(&appConfig)
 
 	// Logger
+	textHandler := slog.NewTextHandler(os.Stdout)
+	slogger := slog.New(textHandler)
+
 	log, err := zap.NewDevelopment()
 	if err != nil {
 		panic("Can't initialize Zap log!")
@@ -61,6 +66,7 @@ func Default() *App {
 		Config: appConfig,
 		Log:    log,
 		Zlog:   zlog.Logger(),
+		Slog:   slogger,
 	}
 
 	mdlw := metricsMiddleware.New(metricsMiddleware.Config{
