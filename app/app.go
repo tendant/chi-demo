@@ -43,7 +43,7 @@ func Default() *App {
 	cleanenv.ReadEnv(&appConfig)
 
 	// Logger
-	textHandler := slog.NewTextHandler(os.Stdout)
+	textHandler := slog.NewTextHandler(os.Stdout, nil)
 	slogger := slog.New(textHandler)
 
 	log, err := zap.NewDevelopment()
@@ -118,10 +118,10 @@ func (app *App) Run() {
 	addr := fmt.Sprintf("%s:%d", app.Config.Host, app.Config.Port)
 	server := &http.Server{Addr: addr, Handler: app.R}
 
-	log.Info(fmt.Sprintf("Started server on %s...", addr))
+	app.Slog.Info("Started server.", "addr", addr)
 	go func() {
 		if err := server.ListenAndServe(); err != nil && err != http.ErrServerClosed {
-			log.Fatal("Failed starting server", zap.Error(err))
+			app.Slog.Error("Failed starting server", "err", err)
 		}
 	}()
 
