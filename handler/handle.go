@@ -8,8 +8,10 @@ import (
 	"github.com/ggicci/httpin"
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/render"
+	"github.com/tendant/chi-demo/dbconn"
 	"github.com/tendant/chi-demo/tutorial"
 	"go.uber.org/zap"
+	"golang.org/x/exp/slog"
 )
 
 type Handle struct {
@@ -70,8 +72,23 @@ func (handle *Handle) DemoList(w http.ResponseWriter, r *http.Request) {
 	render.JSON(w, r, "OK")
 }
 
+func (handle *Handle) Ready(w http.ResponseWriter, r *http.Request) {
+	if handle.DB != nil {
+		ready, err := dbconn.CheckDBConn(handle.DB)
+		slog.Warn("Failed checking database connection", "err", err)
+		if ready {
+			render.PlainText(w, r, "Ready")
+		} else {
+			render.PlainText(w, r, "Not Ready")
+		}
+	} else {
+		render.PlainText(w, r, "Not Ready")
+	}
+}
+
 func Routes(r *chi.Mux, handle Handle) {
 	r.Get("/demo", handle.Demo)
+	r.Get("/healthz/ready", handle.Ready)
 	r.With(httpin.NewInput(QueryInput{})).Get("/query", handle.Query)
 	r.With(httpin.NewInput(DemoPostInput{})).Post("/post", handle.DemoPost)
 	r.With(httpin.NewInput(DemoJsonInput{})).Post("/json", handle.DemoJson)
