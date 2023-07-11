@@ -9,7 +9,6 @@ import (
 	"syscall"
 	"time"
 
-	"github.com/Masterminds/log-go"
 	"github.com/ggicci/httpin"
 	"github.com/go-chi/chi/middleware"
 	"github.com/go-chi/chi/v5"
@@ -43,8 +42,10 @@ func Default() *App {
 	cleanenv.ReadEnv(&appConfig)
 
 	// Logger
-	textHandler := slog.NewTextHandler(os.Stdout, nil)
-	slogger := slog.New(textHandler)
+	jsonHandler := slog.NewJSONHandler(os.Stdout, nil)
+	slogger := slog.New(jsonHandler)
+	// textHandler := slog.NewTextHandler(os.Stdout, nil)
+	// slogger := slog.New(textHandler)
 
 	log, err := zap.NewDevelopment()
 	if err != nil {
@@ -129,9 +130,9 @@ func (app *App) Run() {
 	metricsAddr := fmt.Sprintf("%s:%d", app.Config.Metrics.Host, app.Config.Metrics.Port)
 	metricsServer := &http.Server{Addr: metricsAddr, Handler: promhttp.Handler()}
 	go func() {
-		log.Info(fmt.Sprintf("metrics listening at %s", metricsAddr))
+		app.Slog.Info("metrics listening at", "Addr", metricsAddr)
 		if err := metricsServer.ListenAndServe(); err != nil && err != http.ErrServerClosed {
-			log.Fatal("Failed starting metrics server", zap.Error(err))
+			app.Slog.Error("Failed starting metrics server", "err", err)
 		}
 	}()
 
@@ -144,12 +145,12 @@ func (app *App) Run() {
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
 	if err := server.Shutdown(ctx); err != nil {
-		log.Error("Failed shutdown server", zap.Error(err))
+		app.Slog.Error("Failed shutdown server", "err", err)
 	}
-	log.Info("Server exited")
+	app.Slog.Info("Server exited")
 	if err := metricsServer.Shutdown(ctx); err != nil {
-		log.Error("Failed shutdown metrics server", zap.Error(err))
+		app.Slog.Error("Failed shutdown metrics server", "err", err)
 	}
-	log.Info("Metrics Server exited")
+	app.Slog.Info("Metrics Server exited")
 
 }
