@@ -21,3 +21,6 @@ clean:
 	rm -f $(objects)
 
 .PHONY: clean
+
+run:
+	arelo -t . -p '**/*.go' -i '**/.*' -i '**/*_test.go' -- go run .

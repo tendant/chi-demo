@@ -1,10 +1,13 @@
 package main
 
 import (
+	"runtime/debug"
+
 	"github.com/tendant/chi-demo/app"
 	"github.com/tendant/chi-demo/dbconn"
 	"github.com/tendant/chi-demo/handler"
 	"github.com/tendant/chi-demo/tutorial"
+	"golang.org/x/exp/slog"
 )
 
 func main() {
@@ -15,6 +18,7 @@ func main() {
 	// } else {
 	// 	fmt.Println("connect to database successed")
 	// }
+	slog.Error("demo error", "stack", debug.Stack())
 	driver := "postgres"
 	dsn := "host=localhost port=5432 user=demo password=pwd dbname=demo_db sslmode=disable"
 	settings := dbconn.DBConnSettings{}

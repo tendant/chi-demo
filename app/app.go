@@ -42,10 +42,16 @@ func Default() *App {
 	cleanenv.ReadEnv(&appConfig)
 
 	// Logger
-	jsonHandler := slog.NewJSONHandler(os.Stdout, nil)
-	slogger := slog.New(jsonHandler)
-	// textHandler := slog.NewTextHandler(os.Stdout, nil)
-	// slogger := slog.New(textHandler)
+	appEnv := appConfig.AppEnv
+	var slogger *slog.Logger
+	if appEnv == "dev" {
+		textHandler := slog.NewTextHandler(os.Stdout, nil)
+		slogger = slog.New(textHandler)
+	} else {
+		jsonHandler := slog.NewJSONHandler(os.Stdout, nil)
+		slogger = slog.New(jsonHandler)
+	}
+	slog.SetDefault(slogger)
 
 	log, err := zap.NewDevelopment()
 	if err != nil {

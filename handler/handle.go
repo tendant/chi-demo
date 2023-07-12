@@ -73,14 +73,14 @@ func (handle *Handle) DemoList(w http.ResponseWriter, r *http.Request) {
 }
 
 func (handle *Handle) Ready(w http.ResponseWriter, r *http.Request) {
+	ready := false
+	var err error
 	if handle.DB != nil {
-		ready, err := dbconn.CheckDBConn(handle.DB)
+		ready, err = dbconn.CheckDBConn(handle.DB)
 		slog.Warn("Failed checking database connection", "err", err)
-		if ready {
-			render.PlainText(w, r, "Ready")
-		} else {
-			render.PlainText(w, r, "Not Ready")
-		}
+	}
+	if ready {
+		render.PlainText(w, r, "Ready")
 	} else {
 		render.PlainText(w, r, "Not Ready")
 	}
