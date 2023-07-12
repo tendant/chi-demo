@@ -18,7 +18,7 @@ func main() {
 	// } else {
 	// 	fmt.Println("connect to database successed")
 	// }
-	slog.Error("demo error", "stack", debug.Stack())
+	slog.Error("demo error", "stack", string(debug.Stack()))
 	driver := "postgres"
 	dsn := "host=localhost port=5432 user=demo password=pwd dbname=demo_db sslmode=disable"
 	settings := dbconn.DBConnSettings{}

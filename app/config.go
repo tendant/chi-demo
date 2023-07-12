@@ -13,5 +13,5 @@ type MetricsConfig struct {
 type AppConfig struct {
 	Server
 	Metrics MetricsConfig
-	AppEnv  string `env:"APP_ENV" env-default: "dev"` // "dev", "prodction"
+	AppEnv  string `env:"APP_ENV" env-default:"dev"` // "dev", "prodction"
 }
