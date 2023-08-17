@@ -26,6 +26,10 @@
      GRANT ALL PRIVILEGES ON DATABASE demo_project_db TO demo_project;
      ALTER ROLE demo_project WITH LOGIN;
 
+     GRANT ALL PRIVILEGES ON ALL TABLES IN SCHEMA public TO demo_project;
+
+    # https://stackoverflow.com/questions/22135792/permission-denied-to-create-extension-uuid-ossp
+    GRANT CREATE ON DATABASE demo_project_db to demo_project;
 
 ### Install golang migrate (https://github.com/golang-migrate/migrate)
 
