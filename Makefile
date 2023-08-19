@@ -1,24 +1,24 @@
-GIT_COMMIT ?= noversion
-GIT_COMMIT_SHORT ?= noversion
+SOURCES := $(shell find . -mindepth 2 -name "main.go")
+DESTS := $(patsubst %.go,%,$(SOURCES))
+ALL := main $(DESTS)
 
-LDFLAGS = "-X main.Version=$(GIT_COMMIT)"
+all: $(ALL)
+	@echo $@: Building Targets $^
 
-objects = cmd/query/main cmd/server/main
+main:
+	@echo $@: Building main
+	go build -buildvcs -o dist/$@ $@.go
 
-all: $(objects)
-
-$(objects):
-	go build -ldflags $(LDFLAGS)  -o $@ $@.go
+$(DESTS):
+	@echo $@: Building $@ to ${shell dirname dist/$@}
+	go build -buildvcs -o ${shell dirname dist/$@} $@.go
 
 dep:
 	go mod tidy
 
-vendor:
-	go mod vendor
-
 clean:
 	go clean
-	rm -f $(objects)
+	rm -f $(ALL)
 
 .PHONY: clean
 
