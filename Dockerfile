@@ -20,8 +20,6 @@ FROM golang:1.20.5-alpine
 
 WORKDIR /app
 
-COPY --from=build /app/dist/ /app/
-
-RUN chmod a+x /app/*
+COPY --from=build --chmod=0755 /app/dist/ /app/
 
 # CMD ["/app/main"]
