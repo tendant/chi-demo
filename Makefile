@@ -5,9 +5,14 @@ ALL := dist/main $(DESTS)
 all: $(ALL)
 	@echo $@: Building Targets $^
 
-dist/main: main.go
-	@echo Building $^ into $@
-	test -f main.go && go build -buildvcs -o $@ $^
+dist/main:
+ifneq (,$(wildcard main.go))
+    $(echo main.go does exist!)
+endif
+
+#dist/main:
+#	@echo Building $^ into $@
+#	test -f main.go && go build -buildvcs -o $@ $^
 
 dist/%: %/main.go
 	@echo $@: Building $^ to $@
