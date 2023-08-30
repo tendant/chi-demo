@@ -7,7 +7,8 @@ all: $(ALL)
 
 dist/main:
 ifneq (,$(wildcard main.go))
-    $(echo main.go does exist!)
+	$(echo Bulding main.go)
+	go build -buildvcs -o $@ main.go
 endif
 
 #dist/main:
