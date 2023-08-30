@@ -1,17 +1,17 @@
 SOURCES := $(shell find . -mindepth 2 -name "main.go")
-DESTS := $(patsubst %.go,%,$(SOURCES))
-ALL := main $(DESTS)
+DESTS := $(patsubst ./%/main.go,dist/%,$(SOURCES))
+ALL := dist/main $(DESTS)
 
 all: $(ALL)
 	@echo $@: Building Targets $^
 
-main:
-	@echo $@: Building main
-	go build -buildvcs -o dist/$@ $@.go
+dist/main: main.go
+	@echo Building $^ into $@
+	test -f main.go && go build -buildvcs -o $@ $^
 
-$(DESTS):
-	@echo $@: Building $@ to ${shell dirname dist/$@}
-	go build -buildvcs -o ${shell dirname dist/$@} $@.go
+dist/%: %/main.go
+	@echo $@: Building $^ to $@
+	go build -buildvcs -o $@ $^
 
 dep:
 	go mod tidy
