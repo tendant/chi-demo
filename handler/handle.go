@@ -49,14 +49,15 @@ func (handle *Handle) DemoPost(w http.ResponseWriter, r *http.Request) {
 
 type DemoJsonInput struct {
 	httpin.JSONBody
-	Login    string `json:"login"`
-	Password string `json:"password"`
+	Login    string   `json:"login"`
+	Password string   `json:"password"`
+	Amount   *float64 `json:"amount,omitempty"`
 }
 
 func (handle *Handle) DemoJson(w http.ResponseWriter, r *http.Request) {
 	handle.Log.Debug("Json...")
 	q := r.Context().Value(httpin.Input).(*DemoJsonInput)
-	handle.Log.Debug("Q:", zap.Any("q", q))
+	handle.Log.Info("Q:", zap.Any("q", q))
 	render.JSON(w, r, "OK")
 }
 
