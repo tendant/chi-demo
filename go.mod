@@ -8,8 +8,7 @@ require (
 	github.com/discord-gophers/goapi-gen v0.2.2
 	github.com/getkin/kin-openapi v0.116.0
 	github.com/ggicci/httpin v0.10.1
-	github.com/go-chi/chi v4.1.2+incompatible
-	github.com/go-chi/chi/v5 v5.0.7
+	github.com/go-chi/chi/v5 v5.0.10
 	github.com/go-chi/cors v1.2.1
 	github.com/go-chi/httplog v0.2.5
 	github.com/go-chi/render v1.0.2
@@ -20,7 +19,6 @@ require (
 	github.com/lmittmann/tint v0.3.4
 	github.com/prometheus/client_golang v1.14.0
 	github.com/rs/zerolog v1.29.1
-	github.com/go-chi/httplog/v2 v2.0.0
 	github.com/slok/go-http-metrics v0.10.0
 	go.uber.org/zap v1.21.0
 	golang.org/x/exp v0.0.0-20230626212559-97b1e661b5df
