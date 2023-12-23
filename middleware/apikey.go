@@ -80,7 +80,8 @@ func apiKeyIsValid(rawKey string, availableKeys map[string][]byte) (string, bool
 // bearerToken extracts the content from the header, striping the Bearer prefix
 func bearerToken(r *http.Request, header string) (string, error) {
 	if header == "" {
-		header = "X-API-KEY"
+		// header = "X-API-KEY"
+		header = "Authorization"
 	}
 	rawToken := r.Header.Get(header)
 	pieces := strings.SplitN(rawToken, " ", 2)
