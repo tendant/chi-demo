@@ -10,8 +10,8 @@ import (
 	"time"
 
 	"github.com/ggicci/httpin"
-	"github.com/go-chi/chi/middleware"
 	"github.com/go-chi/chi/v5"
+	"github.com/go-chi/chi/v5/middleware"
 	"github.com/go-chi/cors"
 	"github.com/go-chi/httplog"
 	"github.com/go-chi/render"
