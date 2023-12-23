@@ -1,9 +1,8 @@
 module github.com/tendant/chi-demo
 
-go 1.18
+go 1.20
 
 require (
-	github.com/Masterminds/log-go v1.0.0
 	github.com/cloudevents/sdk-go/v2 v2.12.0
 	github.com/coreos/go-oidc/v3 v3.4.0
 	github.com/discord-gophers/goapi-gen v0.2.2
@@ -18,6 +17,7 @@ require (
 	github.com/google/uuid v1.3.0
 	github.com/ilyakaznacheev/cleanenv v1.4.0
 	github.com/lib/pq v1.10.7
+	github.com/lmittmann/tint v0.3.4
 	github.com/prometheus/client_golang v1.14.0
 	github.com/rs/zerolog v1.29.1
 	github.com/slok/go-http-metrics v0.10.0
@@ -48,7 +48,6 @@ require (
 	github.com/josharian/intern v1.0.0 // indirect
 	github.com/json-iterator/go v1.1.12 // indirect
 	github.com/klauspost/compress v1.15.11 // indirect
-	github.com/lmittmann/tint v0.3.4 // indirect
 	github.com/mailru/easyjson v0.7.7 // indirect
 	github.com/mattn/go-colorable v0.1.12 // indirect
 	github.com/mattn/go-isatty v0.0.14 // indirect
