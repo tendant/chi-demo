@@ -20,6 +20,7 @@ require (
 	github.com/lmittmann/tint v0.3.4
 	github.com/prometheus/client_golang v1.14.0
 	github.com/rs/zerolog v1.29.1
+	github.com/go-chi/httplog/v2 v2.0.0
 	github.com/slok/go-http-metrics v0.10.0
 	go.uber.org/zap v1.21.0
 	golang.org/x/exp v0.0.0-20230626212559-97b1e661b5df

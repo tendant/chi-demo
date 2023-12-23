@@ -130,14 +130,100 @@ func Default() *App {
 	return app
 }
 
+func DefaultWithoutRoutes() *App {
+
+	// Configuration
+	var appConfig AppConfig
+	cleanenv.ReadEnv(&appConfig)
+
+	// Logger
+	appEnv := appConfig.AppEnv
+	slog.Info("appEnv", "appEnv", appEnv)
+	var slogger *slog.Logger
+	if appEnv == "dev" {
+		// create a new logger
+		slogger = slog.New(tint.NewHandler(os.Stderr, &tint.Options{
+			AddSource:  true,
+			Level:      slog.LevelDebug,
+			TimeFormat: time.DateTime,
+		}))
+
+		// textHandler := slog.NewTextHandler(os.Stdout, nil)
+		// slogger = slog.New(textHandler)
+	} else {
+		jsonHandler := slog.NewJSONHandler(os.Stdout, nil)
+		slogger = slog.New(jsonHandler)
+	}
+	slog.SetDefault(slogger)
+
+	logger := httplog.NewLogger("httplog", httplog.Options{
+		JSON: false,
+	})
+
+	httpin.UseGochiURLParam("path", chi.URLParam)
+
+	r := chi.NewRouter()
+
+	app := &App{
+		R:      r,
+		Config: appConfig,
+	}
+
+	mdlw := metricsMiddleware.New(metricsMiddleware.Config{
+		Recorder: metrics.NewRecorder(metrics.Config{}),
+	})
+
+	r.Use(metricsStd.HandlerProvider("", mdlw))
+
+	r.Use(middleware.RequestID)
+	r.Use(middleware.RealIP)
+	r.Use(middleware.Recoverer)
+
+	r.Use(httplog.RequestLogger(logger))
+	// r.Use(middleware.Logger)
+	// Basic CORS
+	// for more ideas, see: https://developer.github.com/v3/#cross-origin-resource-sharing
+	r.Use(cors.Handler(cors.Options{
+		// AllowedOrigins:   []string{"https://foo.com"}, // Use this to allow specific origin hosts
+		// AllowedOrigins: []string{"http://localhost:3000", "https://*.example.com"},
+		AllowedOrigins: []string{"https://*", "http://*"},
+		// AllowOriginFunc:  func(r *http.Request, origin string) bool { return true },
+		AllowedMethods:   []string{"GET", "POST", "PUT", "DELETE", "OPTIONS"},
+		AllowedHeaders:   []string{"Accept", "Authorization", "Content-Type", "X-CSRF-Token", "X-API-KEY"},
+		ExposedHeaders:   []string{"Link"},
+		AllowCredentials: false,
+		MaxAge:           300, // Maximum value not ignored by any of major browsers
+	}))
+
+	return app
+}
+
+func Routes(r *chi.Mux) {
+	r.Get("/", func(w http.ResponseWriter, r *http.Request) {
+		render.PlainText(w, r, http.StatusText(http.StatusOK))
+	})
+
+	r.Get("/version", func(w http.ResponseWriter, r *http.Request) {
+		render.PlainText(w, r, Commit)
+	})
+
+	r.Get("/version/timestamp", func(w http.ResponseWriter, r *http.Request) {
+		render.PlainText(w, r, Timestamp)
+	})
+
+	// r.Get("/healthz", func(w http.ResponseWriter, r *http.Request) {
+	// 	render.PlainText(w, r, http.StatusText(http.StatusOK))
+	// })
+}
+
 func (app *App) Run() {
 	addr := fmt.Sprintf("%s:%d", app.Config.Host, app.Config.Port)
 	server := &http.Server{Addr: addr, Handler: app.R}
 
-	app.Slog.Info("Started server.", "addr", addr)
+	slog.Info("Started server.", "addr", addr)
 	go func() {
 		if err := server.ListenAndServe(); err != nil && err != http.ErrServerClosed {
-			app.Slog.Error("Failed starting server", "err", err)
+			slog.Error("Failed starting server", "err", err)
 		}
 	}()
 
@@ -145,9 +231,9 @@ func (app *App) Run() {
 	metricsAddr := fmt.Sprintf("%s:%d", app.Config.Metrics.Host, app.Config.Metrics.Port)
 	metricsServer := &http.Server{Addr: metricsAddr, Handler: promhttp.Handler()}
 	go func() {
-		app.Slog.Info("metrics listening at", "Addr", metricsAddr)
+		slog.Info("metrics listening at", "Addr", metricsAddr)
 		if err := metricsServer.ListenAndServe(); err != nil && err != http.ErrServerClosed {
-			app.Slog.Error("Failed starting metrics server", "err", err)
+			slog.Error("Failed starting metrics server", "err", err)
 		}
 	}()
 
@@ -160,12 +246,12 @@ func (app *App) Run() {
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
 	if err := server.Shutdown(ctx); err != nil {
-		app.Slog.Error("Failed shutdown server", "err", err)
+		slog.Error("Failed shutdown server", "err", err)
 	}
-	app.Slog.Info("Server exited")
+	slog.Info("Server exited")
 	if err := metricsServer.Shutdown(ctx); err != nil {
-		app.Slog.Error("Failed shutdown metrics server", "err", err)
+		slog.Error("Failed shutdown metrics server", "err", err)
 	}
-	app.Slog.Info("Metrics Server exited")
+	slog.Info("Metrics Server exited")
 
 }

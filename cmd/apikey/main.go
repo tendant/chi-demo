@@ -11,13 +11,14 @@ import (
 )
 
 func main() {
-	apiApp := app.Default()
+	apiApp := app.DefaultWithoutRoutes()
 
 	apiKeyConfig := middleware.ApiKeyConfig{
 		APIKeys: map[string]string{
 			"key1": "ba7816bf8f01cfea414140de5dae2223b00361a396177a9cb410ff61f20015ad", // echo -n "abc" |sha256sum
 		},
 	}
+	app.Routes(apiApp.R)
 	apiKeyMiddleware, err := middleware.ApiKeyMiddleware(apiKeyConfig)
 	if err != nil {
 		slog.Error("Failed initialize API Key middleware", "err", err)
@@ -29,7 +30,6 @@ func main() {
 			})
 		})
 		apiApp.Run()
-
 	}
 }
 
