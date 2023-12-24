@@ -33,7 +33,7 @@ func main() {
 	}
 }
 
-// curl -i -H "X-API-KEY: Bearer abc" localhost:4000/api
+// curl -i -H "Authorization: abc" localhost:4000/api
 
 func handleApi(w http.ResponseWriter, r *http.Request) {
 	render.PlainText(w, r, "API OK!")

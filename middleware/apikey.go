@@ -37,7 +37,7 @@ func ApiKeyMiddleware(cfg ApiKeyConfig) (func(handler http.Handler) http.Handler
 		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 			ctx := r.Context()
 
-			apiKey, err := bearerToken(r, apiKeyHeader)
+			apiKey, err := apiToken(r, apiKeyHeader)
 			if err != nil {
 				slog.Error("request failed API key authentication", "error", err)
 				http.Error(w, "invalid API key", http.StatusUnauthorized)
@@ -91,6 +91,18 @@ func bearerToken(r *http.Request, header string) (string, error) {
 	}
 
 	token := strings.TrimSpace(pieces[1])
+
+	return token, nil
+}
+
+// apiToken extracts the content from the header, striping whitespaces
+func apiToken(r *http.Request, header string) (string, error) {
+	if header == "" {
+		// header = "X-API-KEY"
+		header = "Authorization"
+	}
+	rawToken := r.Header.Get(header)
+	token := strings.TrimSpace(rawToken)
 
 	return token, nil
 }
