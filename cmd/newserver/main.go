@@ -9,5 +9,6 @@ func main() {
 	var config server.Config
 	cleanenv.ReadEnv(&config)
 	s := server.Default(config)
+	server.Routes(s.R)
 	s.Run()
 }
