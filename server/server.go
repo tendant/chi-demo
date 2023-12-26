@@ -37,6 +37,7 @@ func (s *Server) Run() {
 	go func() {
 		if err := server.ListenAndServe(); err != nil && err != http.ErrServerClosed {
 			slog.Error("Failed starting server", "err", err)
+			os.Exit(-1)
 		}
 	}()
 
@@ -47,6 +48,7 @@ func (s *Server) Run() {
 		slog.Info("metrics listening at", "Addr", metricsAddr)
 		if err := metricsServer.ListenAndServe(); err != nil && err != http.ErrServerClosed {
 			slog.Error("Failed starting metrics server", "err", err)
+			os.Exit(-1)
 		}
 	}()
 
