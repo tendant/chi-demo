@@ -48,7 +48,7 @@ func (s *Server) Run() {
 		slog.Info("metrics listening at", "Addr", metricsAddr)
 		if err := metricsServer.ListenAndServe(); err != nil && err != http.ErrServerClosed {
 			slog.Error("Failed starting metrics server", "err", err)
-			os.Exit(-1)
+			// os.Exit(-1)
 		}
 	}()
 
