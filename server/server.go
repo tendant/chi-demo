@@ -13,7 +13,7 @@ import (
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/chi/v5/middleware"
 	"github.com/go-chi/cors"
-	"github.com/go-chi/httplog"
+	"github.com/go-chi/httplog/v2"
 	"github.com/go-chi/render"
 	"github.com/prometheus/client_golang/prometheus/promhttp"
 	"github.com/tendant/chi-demo/app"
@@ -92,6 +92,10 @@ func Default(config Config) *Server {
 
 	logger := httplog.NewLogger("httplog", httplog.Options{
 		JSON: false,
+		QuietDownRoutes: []string{
+			"/healthz",
+			"/healthz/ready",
+		},
 	})
 	r.Use(httplog.RequestLogger(logger))
 
