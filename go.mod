@@ -1,6 +1,8 @@
 module github.com/tendant/chi-demo
 
-go 1.20
+go 1.21
+
+toolchain go1.21.6
 
 require (
 	github.com/cloudevents/sdk-go/v2 v2.12.0
@@ -10,6 +12,8 @@ require (
 	github.com/ggicci/httpin v0.10.1
 	github.com/go-chi/chi/v5 v5.0.11
 	github.com/go-chi/cors v1.2.1
+	github.com/go-chi/httplog v0.3.2
+	github.com/go-chi/httplog/v2 v2.0.8
 	github.com/go-chi/render v1.0.2
 	github.com/go-pkgz/auth v1.20.0
 	github.com/google/uuid v1.3.0
@@ -32,7 +36,6 @@ require (
 	github.com/beorn7/perks v1.0.1 // indirect
 	github.com/cespare/xxhash/v2 v2.1.2 // indirect
 	github.com/dghubble/oauth1 v0.7.1 // indirect
-	github.com/go-chi/httplog/v2 v2.0.8 // indirect
 	github.com/go-oauth2/oauth2/v4 v4.5.1 // indirect
 	github.com/go-openapi/jsonpointer v0.19.5 // indirect
 	github.com/go-openapi/swag v0.19.15 // indirect
@@ -83,5 +86,3 @@ require (
 	gopkg.in/yaml.v3 v3.0.1 // indirect
 	olympos.io/encoding/edn v0.0.0-20201019073823-d3554ca0b0a3 // indirect
 )
-
-replace github.com/go-chi/httplog/v2 v2.0.8 => github.com/tendant/httplog/v2 v2.0.8
