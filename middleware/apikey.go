@@ -102,6 +102,11 @@ func apiToken(r *http.Request, header string) (string, error) {
 		header = "Authorization"
 	}
 	rawToken := r.Header.Get(header)
+
+	if rawToken == "" {
+		rawToken = r.URL.Query().Get("api_key")
+	}
+
 	token := strings.TrimSpace(rawToken)
 
 	return token, nil
