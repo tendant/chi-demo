@@ -18,9 +18,6 @@ import (
 	"github.com/ilyakaznacheev/cleanenv"
 	"github.com/lmittmann/tint"
 	"github.com/prometheus/client_golang/prometheus/promhttp"
-	"github.com/rs/zerolog"
-	zerologl "github.com/rs/zerolog/log"
-	"go.uber.org/zap"
 	"golang.org/x/exp/slog"
 
 	metrics "github.com/slok/go-http-metrics/metrics/prometheus"
@@ -31,103 +28,7 @@ import (
 type App struct {
 	R      *chi.Mux
 	Config AppConfig
-	Log    *zap.Logger
-	Zlog   zerolog.Logger
 	Slog   *slog.Logger
-}
-
-func Default() *App {
-
-	// Configuration
-	var appConfig AppConfig
-	cleanenv.ReadEnv(&appConfig)
-
-	// Logger
-	appEnv := appConfig.AppEnv
-	slog.Info("appEnv", "appEnv", appEnv)
-	var slogger *slog.Logger
-	if appEnv == "dev" {
-		// create a new logger
-		slogger = slog.New(tint.NewHandler(os.Stderr, &tint.Options{
-			AddSource:  true,
-			Level:      slog.LevelDebug,
-			TimeFormat: time.DateTime,
-		}))
-
-		// textHandler := slog.NewTextHandler(os.Stdout, nil)
-		// slogger = slog.New(textHandler)
-	} else {
-		jsonHandler := slog.NewJSONHandler(os.Stdout, nil)
-		slogger = slog.New(jsonHandler)
-	}
-	slog.SetDefault(slogger)
-
-	log, err := zap.NewDevelopment()
-	if err != nil {
-		panic("Can't initialize Zap log!")
-	}
-
-	logger := httplog.NewLogger("httplog", httplog.Options{
-		JSON: false,
-	})
-
-	zlog := zerologl.With().Str("service", "app")
-
-	httpin.UseGochiURLParam("path", chi.URLParam)
-
-	r := chi.NewRouter()
-
-	app := &App{
-		R:      r,
-		Config: appConfig,
-		Log:    log,
-		Zlog:   zlog.Logger(),
-		Slog:   slogger,
-	}
-
-	mdlw := metricsMiddleware.New(metricsMiddleware.Config{
-		Recorder: metrics.NewRecorder(metrics.Config{}),
-	})
-
-	r.Use(metricsStd.HandlerProvider("", mdlw))
-
-	r.Use(middleware.RequestID)
-	r.Use(middleware.RealIP)
-	r.Use(middleware.Recoverer)
-
-	r.Use(httplog.RequestLogger(logger))
-	// r.Use(middleware.Logger)
-	// Basic CORS
-	// for more ideas, see: https://developer.github.com/v3/#cross-origin-resource-sharing
-	r.Use(cors.Handler(cors.Options{
-		// AllowedOrigins:   []string{"https://foo.com"}, // Use this to allow specific origin hosts
-		// AllowedOrigins: []string{"http://localhost:3000", "https://*.example.com"},
-		AllowedOrigins: []string{"https://*", "http://*"},
-		// AllowOriginFunc:  func(r *http.Request, origin string) bool { return true },
-		AllowedMethods:   []string{"GET", "POST", "PUT", "DELETE", "OPTIONS"},
-		AllowedHeaders:   []string{"Accept", "Authorization", "Content-Type", "X-CSRF-Token"},
-		ExposedHeaders:   []string{"Link"},
-		AllowCredentials: false,
-		MaxAge:           300, // Maximum value not ignored by any of major browsers
-	}))
-
-	r.Get("/", func(w http.ResponseWriter, r *http.Request) {
-		render.PlainText(w, r, http.StatusText(http.StatusOK))
-	})
-
-	r.Get("/healthz", func(w http.ResponseWriter, r *http.Request) {
-		render.PlainText(w, r, http.StatusText(http.StatusOK))
-	})
-
-	r.Get("/version", func(w http.ResponseWriter, r *http.Request) {
-		render.PlainText(w, r, Commit)
-	})
-
-	r.Get("/version/timestamp", func(w http.ResponseWriter, r *http.Request) {
-		render.PlainText(w, r, Timestamp)
-	})
-
-	return app
 }
 
 func DefaultWithoutRoutes() *App {
@@ -198,11 +99,7 @@ func DefaultWithoutRoutes() *App {
 	return app
 }
 
-func Routes(r *chi.Mux) {
-	r.Get("/", func(w http.ResponseWriter, r *http.Request) {
-		render.PlainText(w, r, http.StatusText(http.StatusOK))
-	})
-
+func RoutesVersion(r *chi.Mux) {
 	r.Get("/version", func(w http.ResponseWriter, r *http.Request) {
 		render.PlainText(w, r, Commit)
 	})
@@ -210,10 +107,28 @@ func Routes(r *chi.Mux) {
 	r.Get("/version/timestamp", func(w http.ResponseWriter, r *http.Request) {
 		render.PlainText(w, r, Timestamp)
 	})
+}
 
-	// r.Get("/healthz", func(w http.ResponseWriter, r *http.Request) {
-	// 	render.PlainText(w, r, http.StatusText(http.StatusOK))
-	// })
+func RoutesHealthz(r *chi.Mux) {
+	r.Get("/healthz", func(w http.ResponseWriter, r *http.Request) {
+		render.PlainText(w, r, http.StatusText(http.StatusOK))
+	})
+}
+
+func RoutesDefault(r *chi.Mux) {
+	r.Get("/", func(w http.ResponseWriter, r *http.Request) {
+		render.PlainText(w, r, http.StatusText(http.StatusOK))
+	})
+}
+
+func Default() *App {
+
+	app := DefaultWithoutRoutes()
+	RoutesDefault(app.R)
+	RoutesVersion(app.R)
+	RoutesHealthz(app.R)
+
+	return app
 }
 
 func (app *App) Run() {
