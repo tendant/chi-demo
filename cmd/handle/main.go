@@ -11,7 +11,6 @@ import (
 	"github.com/go-chi/render"
 	"github.com/tendant/chi-demo/app"
 	"github.com/tendant/chi-demo/dbconn"
-	"github.com/tendant/chi-demo/handler"
 	"github.com/tendant/chi-demo/tutorial"
 	"go.uber.org/zap"
 	"golang.org/x/exp/slog"
@@ -31,11 +30,11 @@ func main() {
 	settings := dbconn.DBConnSettings{}
 	db, _ := dbconn.OpenDBConn(driver, dsn, settings)
 	queries := tutorial.New(nil)
-	handle := handler.Handle{
+	handle := Handle{
 		DB:      db,
 		Queries: queries,
 	}
-	handler.Routes(newApp.R, handle)
+	Routes(newApp.R, handle)
 	newApp.Run()
 }
 
