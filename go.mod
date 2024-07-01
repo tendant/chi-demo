@@ -13,7 +13,6 @@ require (
 	github.com/go-chi/chi/v5 v5.0.11
 	github.com/go-chi/cors v1.2.1
 	github.com/go-chi/httplog v0.3.2
-	github.com/go-chi/httplog/v2 v2.0.8
 	github.com/go-chi/render v1.0.2
 	github.com/go-pkgz/auth v1.20.0
 	github.com/google/uuid v1.3.0
@@ -21,7 +20,6 @@ require (
 	github.com/lib/pq v1.10.7
 	github.com/lmittmann/tint v1.0.4
 	github.com/prometheus/client_golang v1.14.0
-	github.com/rs/zerolog v1.31.0
 	github.com/slok/go-http-metrics v0.10.0
 	go.uber.org/zap v1.21.0
 	golang.org/x/exp v0.0.0-20231226003508-02704c960a9b
@@ -65,6 +63,7 @@ require (
 	github.com/prometheus/client_model v0.3.0 // indirect
 	github.com/prometheus/common v0.37.0 // indirect
 	github.com/prometheus/procfs v0.8.0 // indirect
+	github.com/rs/zerolog v1.31.0 // indirect
 	github.com/xdg-go/pbkdf2 v1.0.0 // indirect
 	github.com/xdg-go/scram v1.1.1 // indirect
 	github.com/xdg-go/stringprep v1.0.3 // indirect
