@@ -19,7 +19,7 @@ require (
 	github.com/google/uuid v1.3.0
 	github.com/ilyakaznacheev/cleanenv v1.4.0
 	github.com/lib/pq v1.10.7
-	github.com/lmittmann/tint v0.3.4
+	github.com/lmittmann/tint v1.0.4
 	github.com/prometheus/client_golang v1.14.0
 	github.com/rs/zerolog v1.31.0
 	github.com/slok/go-http-metrics v0.10.0
