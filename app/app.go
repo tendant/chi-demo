@@ -96,6 +96,7 @@ func DefaultWithoutRoutes() *App {
 		AllowCredentials: false,
 		MaxAge:           300, // Maximum value not ignored by any of major browsers
 	}))
+	r.Use(middleware.NoCache)
 
 	return app
 }
