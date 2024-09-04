@@ -19,6 +19,7 @@ import (
 	"github.com/go-chi/render"
 	"github.com/ilyakaznacheev/cleanenv"
 	"github.com/lmittmann/tint"
+	"github.com/mikejav/gosts"
 	"github.com/prometheus/client_golang/prometheus/promhttp"
 
 	metrics "github.com/slok/go-http-metrics/metrics/prometheus"
@@ -97,6 +98,17 @@ func DefaultWithoutRoutes() *App {
 		MaxAge:           300, // Maximum value not ignored by any of major browsers
 	}))
 	r.Use(middleware.NoCache)
+
+	// config for hsts middleware
+	hstsConf := &gosts.Info{
+		MaxAge:               60 * 60 * 24,
+		Expires:              time.Now().Add(24 * time.Hour),
+		IncludeSubDomains:    true,
+		SendPreloadDirective: false,
+	}
+	// middleware
+	gosts.Configure(hstsConf)
+	r.Use(gosts.Header)
 
 	return app
 }
