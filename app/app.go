@@ -129,6 +129,12 @@ func RoutesHealthz(r *chi.Mux) {
 	})
 }
 
+func RoutesHealthzReady(r *chi.Mux) {
+	r.Get("/healthz/ready", func(w http.ResponseWriter, r *http.Request) {
+		render.PlainText(w, r, http.StatusText(http.StatusOK))
+	})
+}
+
 func RoutesDefault(r *chi.Mux) {
 	r.Get("/", func(w http.ResponseWriter, r *http.Request) {
 		render.PlainText(w, r, http.StatusText(http.StatusOK))
