@@ -12,13 +12,14 @@ require (
 	github.com/ggicci/httpin v0.10.1
 	github.com/go-chi/chi/v5 v5.0.11
 	github.com/go-chi/cors v1.2.1
-	github.com/go-chi/httplog v0.3.2
+	github.com/go-chi/httplog/v2 v2.1.1
 	github.com/go-chi/render v1.0.2
 	github.com/go-pkgz/auth v1.20.0
 	github.com/google/uuid v1.3.0
 	github.com/ilyakaznacheev/cleanenv v1.4.0
 	github.com/lib/pq v1.10.7
 	github.com/lmittmann/tint v1.0.4
+	github.com/mikejav/gosts v0.0.0-20170827185855-76a026df1bc8
 	github.com/prometheus/client_golang v1.14.0
 	github.com/slok/go-http-metrics v0.10.0
 	go.uber.org/zap v1.21.0
@@ -34,7 +35,6 @@ require (
 	github.com/beorn7/perks v1.0.1 // indirect
 	github.com/cespare/xxhash/v2 v2.1.2 // indirect
 	github.com/dghubble/oauth1 v0.7.1 // indirect
-	github.com/go-chi/httplog/v2 v2.1.1 // indirect
 	github.com/go-oauth2/oauth2/v4 v4.5.1 // indirect
 	github.com/go-openapi/jsonpointer v0.19.5 // indirect
 	github.com/go-openapi/swag v0.19.15 // indirect
@@ -50,11 +50,8 @@ require (
 	github.com/json-iterator/go v1.1.12 // indirect
 	github.com/klauspost/compress v1.15.11 // indirect
 	github.com/mailru/easyjson v0.7.7 // indirect
-	github.com/mattn/go-colorable v0.1.13 // indirect
-	github.com/mattn/go-isatty v0.0.20 // indirect
 	github.com/matttproud/golang_protobuf_extensions v1.0.1 // indirect
 	github.com/microcosm-cc/bluemonday v1.0.20 // indirect
-	github.com/mikejav/gosts v0.0.0-20170827185855-76a026df1bc8 // indirect
 	github.com/modern-go/concurrent v0.0.0-20180306012644-bacd9c7ef1dd // indirect
 	github.com/modern-go/reflect2 v1.0.2 // indirect
 	github.com/mohae/deepcopy v0.0.0-20170929034955-c48cc78d4826 // indirect
@@ -65,7 +62,6 @@ require (
 	github.com/prometheus/client_model v0.3.0 // indirect
 	github.com/prometheus/common v0.37.0 // indirect
 	github.com/prometheus/procfs v0.8.0 // indirect
-	github.com/rs/zerolog v1.31.0 // indirect
 	github.com/xdg-go/pbkdf2 v1.0.0 // indirect
 	github.com/xdg-go/scram v1.1.1 // indirect
 	github.com/xdg-go/stringprep v1.0.3 // indirect
