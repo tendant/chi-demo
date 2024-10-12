@@ -1,4 +1,4 @@
-FROM golang:1.22.3-alpine AS build
+FROM golang:1.23-alpine AS build
 
 RUN apk update && \
     apk add --update openntpd && \
@@ -16,7 +16,7 @@ COPY . .
 
 RUN make
 
-FROM golang:1.20.5-alpine
+FROM golang:1.23-alpine
 
 WORKDIR /app
 

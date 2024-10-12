@@ -1,8 +1,6 @@
 module github.com/tendant/chi-demo
 
-go 1.21
-
-toolchain go1.21.6
+go 1.23
 
 require (
 	github.com/cloudevents/sdk-go/v2 v2.12.0
