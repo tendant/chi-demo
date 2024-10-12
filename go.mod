@@ -34,6 +34,7 @@ require (
 	github.com/beorn7/perks v1.0.1 // indirect
 	github.com/cespare/xxhash/v2 v2.1.2 // indirect
 	github.com/dghubble/oauth1 v0.7.1 // indirect
+	github.com/go-chi/httplog/v2 v2.1.1 // indirect
 	github.com/go-oauth2/oauth2/v4 v4.5.1 // indirect
 	github.com/go-openapi/jsonpointer v0.19.5 // indirect
 	github.com/go-openapi/swag v0.19.15 // indirect

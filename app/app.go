@@ -15,7 +15,7 @@ import (
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/chi/v5/middleware"
 	"github.com/go-chi/cors"
-	"github.com/go-chi/httplog"
+	"github.com/go-chi/httplog/v2"
 	"github.com/go-chi/render"
 	"github.com/ilyakaznacheev/cleanenv"
 	"github.com/lmittmann/tint"
@@ -60,7 +60,23 @@ func DefaultWithoutRoutes() *App {
 	slog.SetDefault(slogger)
 
 	logger := httplog.NewLogger("httplog", httplog.Options{
-		JSON: false,
+		JSON:             false,
+		LogLevel:         slog.LevelInfo,
+		Concise:          true,
+		RequestHeaders:   true,
+		MessageFieldName: "message",
+		// TimeFieldFormat: time.RFC850,
+		// Tags: map[string]string{
+		// 	"version": "v1.0-81aa4244d9fc8076a",
+		// 	"env":     "dev",
+		// },
+		QuietDownRoutes: []string{
+			"/ping",
+			"/healthz",
+			"/healthz/ready",
+		},
+		QuietDownPeriod: 600 * time.Second,
+		// SourceFieldName: "source",
 	})
 
 	httpin.UseGochiURLParam("path", chi.URLParam)
