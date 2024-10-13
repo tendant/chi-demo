@@ -105,6 +105,8 @@ func NewApp(opts ...Option) *App {
 	server.R.Use(middleware.RequestID)
 	server.R.Use(middleware.RealIP)
 	server.R.Use(middleware.Recoverer)
+	slog.Info("Commit", "commit", Commit)
+	server.R.Use(Version(Commit))
 
 	if server.HttpLogger != nil {
 		server.R.Use(httplog.RequestLogger(server.HttpLogger))

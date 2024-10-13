@@ -1,6 +1,9 @@
 package app
 
-import "runtime/debug"
+import (
+	"net/http"
+	"runtime/debug"
+)
 
 //  As long as you have Go 1.18 or higher, a simple go build should
 //  suffice to pass the git information into the Commit string
@@ -46,3 +49,16 @@ var Timestamp = func() string {
 // 		DirtyBuild = kv.Value == "true"
 // 	}
 // }
+
+// Middleware that accepts the application version as a parameter
+func Version(appVersion string) func(http.Handler) http.Handler {
+	return func(next http.Handler) http.Handler {
+		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+			// Set the X-App-Version header with the provided appVersion
+			w.Header().Set("X-App-Version", appVersion)
+
+			// Call the next handler
+			next.ServeHTTP(w, r)
+		})
+	}
+}
