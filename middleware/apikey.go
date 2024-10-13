@@ -18,6 +18,7 @@ type ApiKeyConfig struct {
 	APIKeyMaxLen int
 }
 
+// Deprecated: Use middleware in `app` package instead
 func ApiKeyMiddleware(cfg ApiKeyConfig) (func(handler http.Handler) http.Handler, error) {
 	apiKeyHeader := cfg.APIKeyHeader
 	apiKeys := cfg.APIKeys

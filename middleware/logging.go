@@ -7,6 +7,7 @@ import (
 	"net/http/httputil"
 )
 
+// Deprecated: Use middleware in `app` package
 func LoggingMiddleware(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		log.Print("Executing logging middleware")
