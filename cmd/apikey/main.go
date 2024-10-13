@@ -6,19 +6,18 @@ import (
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/render"
 	"github.com/tendant/chi-demo/app"
-	"github.com/tendant/chi-demo/middleware"
 	"golang.org/x/exp/slog"
 )
 
 func main() {
 	apiApp := app.Default()
 
-	apiKeyConfig := middleware.ApiKeyConfig{
+	apiKeyConfig := app.ApiKeyConfig{
 		APIKeys: map[string]string{
 			"key1": "ba7816bf8f01cfea414140de5dae2223b00361a396177a9cb410ff61f20015ad", // echo -n "abc" |sha256sum
 		},
 	}
-	apiKeyMiddleware, err := middleware.ApiKeyMiddleware(apiKeyConfig)
+	apiKeyMiddleware, err := app.ApiKeyMiddleware(apiKeyConfig)
 	if err != nil {
 		slog.Error("Failed initialize API Key middleware", "err", err)
 	} else {

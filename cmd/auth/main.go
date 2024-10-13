@@ -13,7 +13,7 @@ import (
 	"github.com/go-pkgz/auth/avatar"
 	"github.com/go-pkgz/auth/provider"
 	"github.com/go-pkgz/auth/token"
-	"github.com/tendant/chi-demo/middleware"
+	"github.com/tendant/chi-demo/app"
 )
 
 func main() {
@@ -50,9 +50,9 @@ func main() {
 
 	// setup http server
 	router := chi.NewRouter()
-	router.Use(middleware.LoggingMiddleware)
-	router.Get("/open", openRouteHandler)                                                    // open api
-	router.With(m.Auth, middleware.LoggingMiddleware).Get("/private", protectedRouteHandler) // protected api
+	router.Use(app.LoggingMiddleware)
+	router.Get("/open", openRouteHandler)                                             // open api
+	router.With(m.Auth, app.LoggingMiddleware).Get("/private", protectedRouteHandler) // protected api
 	// router.With(m.Trace).Get("/private", protectedRouteHandler) // protected api
 
 	// setup auth routes
