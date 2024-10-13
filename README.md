@@ -1,5 +1,10 @@
 # chi-demo
 
+## Use app
+
+    server := app.DefaultApp()
+    server.Run()
+
 ## Generate sqlc 
 
     sqlc generate
