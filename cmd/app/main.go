@@ -6,8 +6,9 @@ import (
 )
 
 func main() {
-	newApp := app.Default()
+	// newApp := app.Default()
+	server := app.DefaultApp()
 	var userImpl user.UserImpl
-	newApp.R.Mount("/", user.Handler(&userImpl))
-	newApp.Run()
+	server.R.Mount("/", user.Handler(&userImpl))
+	server.Run()
 }

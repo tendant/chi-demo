@@ -28,9 +28,144 @@ import (
 )
 
 type App struct {
-	R      *chi.Mux
-	Config AppConfig
-	Slog   *slog.Logger
+	R             *chi.Mux
+	Config        AppConfig
+	Slog          *slog.Logger
+	HttpLogger    *httplog.Logger
+	CorsOptions   *cors.Options
+	UseHttpin     bool
+	EnableMetrics bool
+}
+
+type Option func(*App)
+
+func DefaultAppConfig() AppConfig {
+	var appConfig AppConfig
+	cleanenv.ReadEnv(&appConfig)
+	return appConfig
+}
+
+func DefaultHttpLogger() *httplog.Logger {
+	logger := httplog.NewLogger("httplog", httplog.Options{
+		JSON:             false,
+		LogLevel:         slog.LevelInfo,
+		Concise:          true,
+		RequestHeaders:   true,
+		MessageFieldName: "message",
+		// TimeFieldFormat: time.RFC850,
+		// Tags: map[string]string{
+		// 	"version": "v1.0-81aa4244d9fc8076a",
+		// 	"env":     "dev",
+		// },
+		QuietDownRoutes: []string{
+			"/ping",
+			"/healthz",
+			"/healthz/ready",
+		},
+		QuietDownPeriod: 600 * time.Second,
+		// SourceFieldName: "source",
+	})
+	return logger
+}
+
+func DefaultCorsOptions() *cors.Options {
+	corsOptions := &cors.Options{
+		// AllowedOrigins:   []string{"https://foo.com"}, // Use this to allow specific origin hosts
+		// AllowedOrigins: []string{"http://localhost:3000", "https://*.example.com"},
+		AllowedOrigins: []string{"https://*", "http://*"},
+		// AllowOriginFunc:  func(r *http.Request, origin string) bool { return true },
+		AllowedMethods:   []string{"GET", "POST", "PUT", "DELETE", "OPTIONS"},
+		AllowedHeaders:   []string{"Accept", "Authorization", "Content-Type", "X-CSRF-Token", "X-API-KEY"},
+		ExposedHeaders:   []string{"Link"},
+		AllowCredentials: false,
+		MaxAge:           300, // Maximum value not ignored by any of major browsers
+	}
+	return corsOptions
+}
+
+func NewApp(opts ...Option) *App {
+	server := &App{}
+	for _, opt := range opts {
+		opt(server)
+	}
+	if server.R == nil {
+		server.R = chi.NewRouter()
+	}
+	if server.UseHttpin {
+		httpin.UseGochiURLParam("path", chi.URLParam)
+	}
+	if server.EnableMetrics {
+		mdlw := metricsMiddleware.New(metricsMiddleware.Config{
+			Recorder: metrics.NewRecorder(metrics.Config{}),
+		})
+
+		server.R.Use(metricsStd.HandlerProvider("", mdlw))
+
+	}
+	server.R.Use(middleware.RequestID)
+	server.R.Use(middleware.RealIP)
+	server.R.Use(middleware.Recoverer)
+
+	if server.HttpLogger != nil {
+		server.R.Use(httplog.RequestLogger(server.HttpLogger))
+	}
+
+	if server.CorsOptions != nil {
+		server.R.Use(cors.Handler(*server.CorsOptions))
+	}
+
+	// For Security
+	server.R.Use(middleware.NoCache)
+
+	// For Security: HSTS
+	// config for hsts middleware
+	hstsConf := &gosts.Info{
+		MaxAge:               60 * 60 * 24,
+		Expires:              time.Now().Add(24 * time.Hour),
+		IncludeSubDomains:    true,
+		SendPreloadDirective: false,
+	}
+	// middleware
+	gosts.Configure(hstsConf)
+	server.R.Use(gosts.Header)
+
+	return server
+}
+
+func WithHttpin(useHttpin bool) Option {
+	return func(s *App) {
+		s.UseHttpin = useHttpin
+	}
+}
+
+func WithReqLogger(logger *httplog.Logger) Option {
+	return func(s *App) {
+		s.HttpLogger = logger
+	}
+}
+
+func WithAppConfig(config AppConfig) Option {
+	return func(s *App) {
+		s.Config = config
+	}
+}
+
+func WithCors(corsOptions *cors.Options) Option {
+	return func(s *App) {
+		s.CorsOptions = corsOptions
+	}
+}
+
+func WithRouter(router *chi.Mux) Option {
+	return func(s *App) {
+		s.R = router
+	}
+}
+
+func WithMetrics(enable bool) Option {
+	return func(s *App) {
+		s.EnableMetrics = enable
+	}
 }
 
 func DefaultWithoutRoutes() *App {
@@ -83,7 +218,7 @@ func DefaultWithoutRoutes() *App {
 
 	r := chi.NewRouter()
 
-	app := &App{
+	server := &App{
 		R:      r,
 		Config: appConfig,
 	}
@@ -102,7 +237,7 @@ func DefaultWithoutRoutes() *App {
 	// r.Use(middleware.Logger)
 	// Basic CORS
 	// for more ideas, see: https://developer.github.com/v3/#cross-origin-resource-sharing
-	r.Use(cors.Handler(cors.Options{
+	server.CorsOptions = &cors.Options{
 		// AllowedOrigins:   []string{"https://foo.com"}, // Use this to allow specific origin hosts
 		// AllowedOrigins: []string{"http://localhost:3000", "https://*.example.com"},
 		AllowedOrigins: []string{"https://*", "http://*"},
@@ -112,7 +247,8 @@ func DefaultWithoutRoutes() *App {
 		ExposedHeaders:   []string{"Link"},
 		AllowCredentials: false,
 		MaxAge:           300, // Maximum value not ignored by any of major browsers
-	}))
+	}
+	r.Use(cors.Handler(*server.CorsOptions))
 	r.Use(middleware.NoCache)
 
 	// config for hsts middleware
@@ -126,7 +262,7 @@ func DefaultWithoutRoutes() *App {
 	gosts.Configure(hstsConf)
 	r.Use(gosts.Header)
 
-	return app
+	return server
 }
 
 func RoutesVersion(r *chi.Mux) {
@@ -157,14 +293,26 @@ func RoutesDefault(r *chi.Mux) {
 	})
 }
 
+func DefaultApp() *App {
+	server := NewApp(
+		WithAppConfig(DefaultAppConfig()),
+		WithMetrics(true),
+		WithCors(DefaultCorsOptions()),
+		WithHttpin(true),
+		WithMetrics(true),
+		WithReqLogger(DefaultHttpLogger()),
+	)
+	return server
+}
+
 func Default() *App {
 
-	app := DefaultWithoutRoutes()
-	RoutesDefault(app.R)
-	RoutesVersion(app.R)
-	RoutesHealthz(app.R)
+	server := DefaultWithoutRoutes()
+	RoutesDefault(server.R)
+	RoutesVersion(server.R)
+	RoutesHealthz(server.R)
 
-	return app
+	return server
 }
 
 func (app *App) Run() {
@@ -178,15 +326,18 @@ func (app *App) Run() {
 		}
 	}()
 
-	// Serve metrics.
-	metricsAddr := fmt.Sprintf("%s:%d", app.Config.Metrics.Host, app.Config.Metrics.Port)
-	metricsServer := &http.Server{Addr: metricsAddr, Handler: promhttp.Handler()}
-	go func() {
-		slog.Info("metrics listening at", "Addr", metricsAddr)
-		if err := metricsServer.ListenAndServe(); err != nil && err != http.ErrServerClosed {
-			slog.Error("Failed starting metrics server", "err", err)
-		}
-	}()
+	var metricsServer *http.Server
+	if app.EnableMetrics {
+		// Serve metrics.
+		metricsAddr := fmt.Sprintf("%s:%d", app.Config.Metrics.Host, app.Config.Metrics.Port)
+		metricsServer = &http.Server{Addr: metricsAddr, Handler: promhttp.Handler()}
+		go func() {
+			slog.Info("metrics listening at", "Addr", metricsAddr)
+			if err := metricsServer.ListenAndServe(); err != nil && err != http.ErrServerClosed {
+				slog.Error("Failed starting metrics server", "err", err)
+			}
+		}()
+	}
 
 	// Capturing signal
 	stop := make(chan os.Signal, 1)
@@ -200,9 +351,11 @@ func (app *App) Run() {
 		slog.Error("Failed shutdown server", "err", err)
 	}
 	slog.Info("Server exited")
-	if err := metricsServer.Shutdown(ctx); err != nil {
-		slog.Error("Failed shutdown metrics server", "err", err)
+	if app.EnableMetrics && metricsServer != nil {
+		if err := metricsServer.Shutdown(ctx); err != nil {
+			slog.Error("Failed shutdown metrics server", "err", err)
+		}
+		slog.Info("Metrics Server exited")
 	}
-	slog.Info("Metrics Server exited")
 
 }

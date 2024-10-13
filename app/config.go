@@ -6,8 +6,9 @@ type Server struct {
 }
 
 type MetricsConfig struct {
-	Host string `env:"METRICS_HOST" env-default:"localhost"`
-	Port int    `env:"METRICS_PORT" env-default:"9100"`
+	Enabled bool   `env:"METRICS_ENABLED" env-default:"true"`
+	Host    string `env:"METRICS_HOST" env-default:"localhost"`
+	Port    int    `env:"METRICS_PORT" env-default:"9100"`
 }
 
 type AppConfig struct {
