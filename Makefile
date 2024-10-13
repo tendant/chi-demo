@@ -1,3 +1,10 @@
+GIT_COMMIT_SHORT=$(shell git rev-parse --short HEAD)
+COMMIT_TIME=$(shell git show -s --format=%cd --date=iso-strict HEAD)
+
+LDFLAGS=-X github.com/tendant/chi-demo/app.GitCommit=$(GIT_COMMIT_SHORT) \
+        -X github.com/tendant/chi-demo/app.CommitTime=$(COMMIT_TIME) \
+
+
 SOURCES := $(shell find . -mindepth 2 -name "main.go")
 DESTS := $(patsubst ./%/main.go,dist/%,$(SOURCES))
 ALL := dist/main $(DESTS)
@@ -8,7 +15,7 @@ all: $(ALL)
 dist/main:
 ifneq (,$(wildcard main.go))
 	$(echo Bulding main.go)
-	go build -buildvcs -o $@ main.go
+	go build -buildvcs -ldflags "$(LDFLAGS)" -o $@ main.go
 endif
 
 #dist/main:
@@ -17,7 +24,7 @@ endif
 
 dist/%: %/main.go
 	@echo $@: Building $^ to $@
-	go build -buildvcs -o $@ $^
+	go build -buildvcs -ldflags "$(LDFLAGS)" -o $@ $^
 
 dep:
 	go mod tidy

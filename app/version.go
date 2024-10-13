@@ -15,6 +15,11 @@ import (
 // this work, you need Go 1.18, and should build using the -buildvcs
 // (which should be available in your goenv).
 
+var (
+	GitCommit  = "none"
+	CommitTime = ""
+)
+
 var Commit = func() string {
 	if info, ok := debug.ReadBuildInfo(); ok {
 		for _, setting := range info.Settings {
@@ -24,7 +29,7 @@ var Commit = func() string {
 		}
 	}
 
-	return "NoCommit"
+	return GitCommit
 }()
 
 var Timestamp = func() string {
@@ -36,7 +41,7 @@ var Timestamp = func() string {
 		}
 	}
 
-	return "NoTimestamp"
+	return CommitTime
 }()
 
 // for _, kv := range info.Settings {
