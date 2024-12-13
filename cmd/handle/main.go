@@ -1,7 +1,6 @@
 package main
 
 import (
-	"database/sql"
 	"fmt"
 	"net/http"
 	"runtime/debug"
@@ -10,8 +9,6 @@ import (
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/render"
 	"github.com/tendant/chi-demo/app"
-	"github.com/tendant/chi-demo/dbconn"
-	"github.com/tendant/chi-demo/tutorial"
 	"go.uber.org/zap"
 	"golang.org/x/exp/slog"
 )
@@ -25,22 +22,10 @@ func main() {
 	// 	fmt.Println("connect to database successed")
 	// }
 	slog.Warn("demo error", "stack", string(debug.Stack()))
-	driver := "postgres"
-	dsn := "host=localhost port=5432 user=demo password=pwd dbname=demo_db sslmode=disable"
-	settings := dbconn.DBConnSettings{}
-	db, _ := dbconn.OpenDBConn(driver, dsn, settings)
-	queries := tutorial.New(nil)
-	handle := Handle{
-		DB:      db,
-		Queries: queries,
-	}
-	Routes(newApp.R, handle)
 	newApp.Run()
 }
 
 type Handle struct {
-	DB      *sql.DB
-	Queries *tutorial.Queries
 }
 
 func (handle *Handle) Demo(w http.ResponseWriter, r *http.Request) {
@@ -98,11 +83,6 @@ func (handle *Handle) DemoList(w http.ResponseWriter, r *http.Request) {
 
 func (handle *Handle) Ready(w http.ResponseWriter, r *http.Request) {
 	ready := false
-	var err error
-	if handle.DB != nil {
-		ready, err = dbconn.CheckDBConn(handle.DB)
-		slog.Warn("Failed checking database connection", "err", err)
-	}
 	if ready {
 		render.PlainText(w, r, "Ready")
 	} else {
