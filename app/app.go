@@ -41,7 +41,10 @@ type Option func(*App)
 
 func DefaultAppConfig() AppConfig {
 	var appConfig AppConfig
-	cleanenv.ReadEnv(&appConfig)
+	err := cleanenv.ReadEnv(&appConfig)
+	if err != nil {
+		slog.Error("Failed reading environment variables", "err", err)
+	}
 	return appConfig
 }
 
