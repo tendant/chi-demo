@@ -301,9 +301,24 @@ func DefaultApp() *App {
 		WithMetrics(true),
 		WithCors(DefaultCorsOptions()),
 		WithHttpin(true),
-		WithMetrics(true),
 		WithReqLogger(DefaultHttpLogger()),
 	)
+	return server
+}
+
+func DefaultAppWithTimeout() *App {
+	server := NewApp(
+		WithAppConfig(DefaultAppConfig()),
+		WithMetrics(true),
+		WithCors(DefaultCorsOptions()),
+		WithHttpin(true),
+		WithReqLogger(DefaultHttpLogger()),
+	)
+
+	// Add timeout middleware
+	timeout := time.Duration(server.Config.Timeouts.HandlerTimeout) * time.Second
+	server.R.Use(middleware.Timeout(timeout))
+
 	return server
 }
 
@@ -322,6 +337,61 @@ func (app *App) Run() {
 	server := &http.Server{Addr: addr, Handler: app.R}
 
 	slog.Info("Started server.", "addr", addr)
+	go func() {
+		if err := server.ListenAndServe(); err != nil && err != http.ErrServerClosed {
+			slog.Error("Failed starting server", "err", err)
+		}
+	}()
+
+	var metricsServer *http.Server
+	if app.EnableMetrics {
+		// Serve metrics.
+		metricsAddr := fmt.Sprintf("%s:%d", app.Config.Metrics.Host, app.Config.Metrics.Port)
+		metricsServer = &http.Server{Addr: metricsAddr, Handler: promhttp.Handler()}
+		go func() {
+			slog.Info("metrics listening at", "Addr", metricsAddr)
+			if err := metricsServer.ListenAndServe(); err != nil && err != http.ErrServerClosed {
+				slog.Error("Failed starting metrics server", "err", err)
+			}
+		}()
+	}
+
+	// Capturing signal
+	stop := make(chan os.Signal, 1)
+	signal.Notify(stop, os.Interrupt, syscall.SIGINT, syscall.SIGTERM)
+
+	// Waiting for SIGINT (kill -2)
+	<-stop
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
+	if err := server.Shutdown(ctx); err != nil {
+		slog.Error("Failed shutdown server", "err", err)
+	}
+	slog.Info("Server exited")
+	if app.EnableMetrics && metricsServer != nil {
+		if err := metricsServer.Shutdown(ctx); err != nil {
+			slog.Error("Failed shutdown metrics server", "err", err)
+		}
+		slog.Info("Metrics Server exited")
+	}
+
+}
+
+func (app *App) RunWithTimeout() {
+	addr := fmt.Sprintf("%s:%d", app.Config.Host, app.Config.Port)
+	server := &http.Server{
+		Addr:         addr,
+		Handler:      app.R,
+		ReadTimeout:  time.Duration(app.Config.Timeouts.ReadTimeout) * time.Second,
+		WriteTimeout: time.Duration(app.Config.Timeouts.WriteTimeout) * time.Second,
+		IdleTimeout:  time.Duration(app.Config.Timeouts.IdleTimeout) * time.Second,
+	}
+
+	slog.Info("Started server with timeouts.", "addr", addr,
+		"readTimeout", app.Config.Timeouts.ReadTimeout,
+		"writeTimeout", app.Config.Timeouts.WriteTimeout,
+		"idleTimeout", app.Config.Timeouts.IdleTimeout,
+		"handlerTimeout", app.Config.Timeouts.HandlerTimeout)
 	go func() {
 		if err := server.ListenAndServe(); err != nil && err != http.ErrServerClosed {
 			slog.Error("Failed starting server", "err", err)
