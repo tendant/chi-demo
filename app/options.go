@@ -137,10 +137,9 @@ func WithMetrics(enabled bool) Option {
 	}
 }
 
-// WithMetricsCombined enables metrics on the main application server at the specified path.
-// This is simpler than separate mode as it only requires one port.
-// Default path is "/metrics" if not specified via WithMetricsPath().
-func WithMetricsCombined() Option {
+// WithMetricsSeparate enables metrics on a separate dedicated server with default port (9090).
+// This is useful for production environments where you want metrics isolated.
+func WithMetricsSeparate() Option {
 	return func(a *App) {
 		// Create metrics recorder
 		mdlw := metricsMiddleware.New(metricsMiddleware.Config{
@@ -148,9 +147,9 @@ func WithMetricsCombined() Option {
 		})
 		a.metricsRecorder = mdlw
 
-		// Update config to enable metrics in COMBINED mode
+		// Update config to enable metrics in SEPARATE mode
 		a.Config.Metrics.Enabled = true
-		a.Config.Metrics.Mode = "combined"
+		a.Config.Metrics.Mode = "separate"
 
 		// Enable metrics in the middleware stack
 		if a.middlewareStack != nil {
@@ -165,8 +164,8 @@ func WithMetricsCombined() Option {
 	}
 }
 
-// WithMetricsSeparatePort enables metrics on a separate dedicated server.
-// This is useful for production environments where you want metrics isolated.
+// WithMetricsSeparatePort enables metrics on a separate dedicated server with custom port.
+// This is useful for production environments where you want metrics isolated on a specific port.
 func WithMetricsSeparatePort(port int) Option {
 	return func(a *App) {
 		// Create metrics recorder

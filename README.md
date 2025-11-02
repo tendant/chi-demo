@@ -34,7 +34,7 @@ func main() {
 myApp := app.NewApp(
     app.WithPort(8080),
     app.WithDefaultCORS(),
-    app.WithMetricsCombined(),  // Enable metrics on same port
+    app.WithMetrics(true),  // Enable metrics (combined mode by default)
 )
 
 myApp.R.Get("/hello", handleHello)
@@ -43,19 +43,27 @@ myApp.Run()
 
 ### Metrics Modes
 
-**Combined Mode** (simple, one port):
+**Combined Mode** (default, simple, one port):
 ```go
+// Metrics at http://localhost:3000/metrics (same server)
 app := app.NewApp(
     app.WithPort(3000),
-    app.WithMetricsCombined(),  // Metrics at http://localhost:3000/metrics
+    app.WithMetrics(true),  // Combined mode by default
 )
 ```
 
 **Separate Mode** (production, security):
 ```go
+// Metrics at http://localhost:9090/metrics (separate server)
 app := app.NewApp(
     app.WithPort(3000),
-    app.WithMetricsSeparatePort(9090),  // Metrics at http://localhost:9090/metrics
+    app.WithMetricsSeparate(),  // Separate server with default port
+)
+
+// Or with custom port
+app := app.NewApp(
+    app.WithPort(3000),
+    app.WithMetricsSeparatePort(9091),
 )
 ```
 
@@ -114,9 +122,9 @@ Available methods: `Add`, `Prepend`, `Append`, `InsertBefore`, `InsertAfter`, `R
 
 **Metrics:**
 - `WithMetrics(bool)` - Enable metrics (combined mode by default)
-- `WithMetricsCombined()` - Explicitly enable combined mode
-- `WithMetricsSeparatePort(port)` - Enable metrics on separate port
-- `WithMetricsPath(path)` - Custom metrics endpoint path
+- `WithMetricsSeparate()` - Enable metrics on separate server (default port 9090)
+- `WithMetricsSeparatePort(port)` - Enable metrics on separate server with custom port
+- `WithMetricsPath(path)` - Custom metrics endpoint path (works for both modes)
 - `WithMetricsMode(mode)` - Set mode explicitly ("combined" or "separate")
 
 **Router:**
@@ -212,9 +220,15 @@ stack := app.DefaultMiddlewareStack().
     InsertAfter("request-id", "auth", myAuth).
     Build()
 
-// Flexible metrics
+// Flexible metrics (combined mode by default)
 app := app.NewApp(
     app.WithMiddlewareStack(stack),
-    app.WithMetricsCombined(),  // NEW: Metrics on same port
+    app.WithMetrics(true),  // Metrics on same port by default
+)
+
+// Or use separate server for production
+app := app.NewApp(
+    app.WithMiddlewareStack(stack),
+    app.WithMetricsSeparate(),  // Metrics on dedicated port
 )
 ```
