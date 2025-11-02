@@ -73,13 +73,55 @@ myApp := app.NewApp(
 )
 ```
 
-## Documentation
+## Key Concepts
 
-See [app/README.md](app/README.md) for comprehensive documentation including:
-- Middleware stack system
-- Configuration options
-- Metrics modes (combined vs separate)
-- Examples and best practices
+### Middleware Stack System
+
+Control middleware ordering with a fluent builder API:
+
+```go
+stack := app.DefaultMiddlewareStack().
+    InsertAfter("request-id", "auth", authMiddleware).
+    Remove("hsts").
+    Replace("http-logger", customLogger).
+    Build()
+
+app := app.NewApp(
+    app.WithMiddlewareStack(stack),
+)
+```
+
+Available methods: `Add`, `Prepend`, `Append`, `InsertBefore`, `InsertAfter`, `Replace`, `Remove`, `Enable`, `Disable`
+
+### Configuration Options
+
+**Application:**
+- `WithConfig(AppConfig)` - Set complete configuration
+- `WithPort(int)` - Set port
+- `WithHost(string)` - Set host
+
+**Logging:**
+- `WithLogger(*slog.Logger)` - Custom slog logger
+- `WithHTTPLogger(*httplog.Logger)` - HTTP request logger
+- `WithLogLevel(slog.Level)` - Set log level
+
+**Middleware:**
+- `WithMiddlewareStack(*MiddlewareStack)` - Custom stack
+- `WithCORS(*cors.Options)` - Configure CORS
+- `WithDefaultCORS()` - CORS with defaults
+- `WithHSTS(*gosts.Info)` - Configure HSTS
+- `WithDefaultHSTS()` - HSTS with defaults
+
+**Metrics:**
+- `WithMetrics(bool)` - Enable metrics (separate mode, backward compatible)
+- `WithMetricsCombined()` - Metrics on main app server
+- `WithMetricsSeparatePort(port)` - Metrics on separate port
+- `WithMetricsPath(path)` - Custom metrics endpoint path
+- `WithMetricsMode(mode)` - Set mode explicitly
+
+**Router:**
+- `WithRouter(*chi.Mux)` - Use custom router
+- `WithHttpin(bool)` - Enable httpin integration
 
 ## Project Structure
 
@@ -90,7 +132,10 @@ See [app/README.md](app/README.md) for comprehensive documentation including:
 │   ├── middleware.go - Middleware stack system
 │   ├── server.go     - Server lifecycle
 │   ├── options.go    - Functional options
-│   └── README.md     - Full documentation
+│   ├── config.go     - Configuration types
+│   ├── logging.go    - Logger factories
+│   ├── routes.go     - Route helpers
+│   └── version.go    - Version middleware
 ├── cmd/              - Example applications
 └── migrations/       - Database migrations
 ```
@@ -215,7 +260,7 @@ See [app/README.md](app/README.md) for comprehensive documentation including:
 
 #### 🔄 Migration
 
-All existing code continues to work! See [app/README.md](app/README.md) for migration guide.
+All existing code continues to work! The refactoring is 100% backward compatible.
 
 **Old code (still works):**
 ```go
