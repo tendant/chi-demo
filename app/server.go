@@ -37,6 +37,39 @@ func (s *Server) Run() error {
 		Handler: s.App.R,
 	}
 
+	// Handle metrics based on mode
+	if s.App.Config.Metrics.Enabled {
+		switch s.App.Config.Metrics.Mode {
+		case "combined":
+			// Register metrics endpoint on main router
+			s.App.R.Handle(s.App.Config.Metrics.Path, promhttp.Handler())
+			slog.Info("Metrics enabled", "mode", "combined", "path", s.App.Config.Metrics.Path, "addr", addr)
+
+		case "separate":
+			// Start separate metrics server with custom path support
+			metricsAddr := fmt.Sprintf("%s:%d", s.App.Config.Metrics.Host, s.App.Config.Metrics.Port)
+
+			// Create a router for the metrics server to support custom paths
+			metricsRouter := http.NewServeMux()
+			metricsRouter.Handle(s.App.Config.Metrics.Path, promhttp.Handler())
+
+			s.MetricsServer = &http.Server{
+				Addr:    metricsAddr,
+				Handler: metricsRouter,
+			}
+
+			go func() {
+				slog.Info("Starting metrics server", "mode", "separate", "addr", metricsAddr, "path", s.App.Config.Metrics.Path)
+				if err := s.MetricsServer.ListenAndServe(); err != nil && err != http.ErrServerClosed {
+					slog.Error("Metrics server error", "err", err)
+				}
+			}()
+
+		default:
+			slog.Warn("Invalid metrics mode", "mode", s.App.Config.Metrics.Mode)
+		}
+	}
+
 	// Start main HTTP server
 	slog.Info("Starting HTTP server", "addr", addr)
 	go func() {
@@ -44,22 +77,6 @@ func (s *Server) Run() error {
 			slog.Error("HTTP server error", "err", err)
 		}
 	}()
-
-	// Start metrics server if enabled
-	if s.App.Config.Metrics.Enabled {
-		metricsAddr := fmt.Sprintf("%s:%d", s.App.Config.Metrics.Host, s.App.Config.Metrics.Port)
-		s.MetricsServer = &http.Server{
-			Addr:    metricsAddr,
-			Handler: promhttp.Handler(),
-		}
-
-		go func() {
-			slog.Info("Starting metrics server", "addr", metricsAddr)
-			if err := s.MetricsServer.ListenAndServe(); err != nil && err != http.ErrServerClosed {
-				slog.Error("Metrics server error", "err", err)
-			}
-		}()
-	}
 
 	// Wait for interrupt signal
 	return s.waitForShutdown()

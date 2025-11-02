@@ -159,6 +159,8 @@ USE_HTTPIN=false
 
 # Metrics
 METRICS_ENABLED=true
+METRICS_MODE=separate       # "combined" or "separate"
+METRICS_PATH=/metrics       # Endpoint path
 METRICS_HOST=localhost
 METRICS_PORT=9090
 ```
@@ -182,7 +184,15 @@ METRICS_PORT=9090
 - `WithMiddlewareStack(*MiddlewareStack)` - Custom stack
 - `WithCORS(*cors.Options)` - Configure CORS
 - `WithDefaultCORS()` - CORS with defaults
-- `WithMetrics(bool)` - Enable Prometheus metrics
+
+**Metrics Options:**
+- `WithMetrics(bool)` - Enable metrics in separate server mode (backward compatible)
+- `WithMetricsCombined()` - Enable metrics on main app server (simple, one port)
+- `WithMetricsSeparatePort(port)` - Enable metrics on separate port (production)
+- `WithMetricsPath(path)` - Set custom metrics endpoint path (default: "/metrics")
+- `WithMetricsMode(mode)` - Set mode explicitly ("combined" or "separate")
+
+**Other Middleware:**
 - `WithHSTS(*gosts.Info)` - Configure HSTS
 - `WithDefaultHSTS()` - HSTS with defaults
 
@@ -190,6 +200,112 @@ METRICS_PORT=9090
 
 - `WithRouter(*chi.Mux)` - Use custom router
 - `WithHttpin(bool)` - Enable httpin integration
+
+## Metrics
+
+The app package supports Prometheus metrics in two modes: **combined** (metrics on main app server) and **separate** (metrics on dedicated port).
+
+### Combined Mode (Recommended for Development)
+
+Metrics are served on the main application server at a configurable path.
+
+```go
+// Simple - metrics at http://localhost:3000/metrics
+app := app.NewApp(
+    app.WithPort(3000),
+    app.WithMetricsCombined(),
+)
+
+// Custom path - metrics at http://localhost:3000/internal/metrics
+app := app.NewApp(
+    app.WithPort(3000),
+    app.WithMetricsCombined(),
+    app.WithMetricsPath("/internal/metrics"),
+)
+```
+
+**Pros:**
+- ✅ Simple - only one port to manage
+- ✅ Easier local development
+- ✅ Container-friendly (fewer port mappings)
+
+**Cons:**
+- ⚠️ Metrics exposed on public port (use middleware for access control)
+
+### Separate Mode (Recommended for Production)
+
+Metrics are served on a dedicated server with separate port.
+
+```go
+// Explicit separate mode
+app := app.NewApp(
+    app.WithPort(3000),
+    app.WithMetricsSeparatePort(9090),
+)
+// App at: http://localhost:3000
+// Metrics at: http://localhost:9090/metrics
+
+// Separate mode with custom path
+app := app.NewApp(
+    app.WithPort(3000),
+    app.WithMetricsSeparatePort(9090),
+    app.WithMetricsPath("/internal/metrics"),
+)
+// Metrics at: http://localhost:9090/internal/metrics
+```
+
+**Pros:**
+- ✅ Security - metrics on internal port only
+- ✅ Isolation - separate from app traffic
+- ✅ Production standard
+
+**Cons:**
+- ⚠️ Two ports to manage
+- ⚠️ More complex container/k8s setup
+
+### Backward Compatibility
+
+The old `WithMetrics(bool)` API still works and uses separate mode by default:
+
+```go
+// This still works - creates separate metrics server on port 9090
+app := app.NewApp(
+    app.WithMetrics(true),
+)
+```
+
+### Environment Variables
+
+```bash
+# Combined mode
+METRICS_ENABLED=true
+METRICS_MODE=combined
+METRICS_PATH=/metrics
+
+# Separate mode
+METRICS_ENABLED=true
+METRICS_MODE=separate
+METRICS_PORT=9090
+METRICS_PATH=/metrics
+```
+
+### Securing Metrics in Combined Mode
+
+When using combined mode, add middleware to restrict access:
+
+```go
+app := app.NewApp(
+    app.WithPort(3000),
+    app.WithMetricsCombined(),
+)
+
+// Protect metrics endpoint
+app.R.Route("/metrics", func(r chi.Router) {
+    r.Use(internalIPMiddleware)  // Only allow internal IPs
+    r.Use(authMiddleware)         // Or require authentication
+    r.Handle("/", promhttp.Handler())
+})
+```
 
 ## Examples
 

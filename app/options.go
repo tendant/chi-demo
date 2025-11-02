@@ -105,7 +105,9 @@ func WithDefaultCORS() Option {
 	return WithCORS(DefaultCorsOptions())
 }
 
-// WithMetrics enables and configures Prometheus metrics middleware
+// WithMetrics enables and configures Prometheus metrics middleware in separate server mode.
+// This maintains backward compatibility - metrics will run on a separate port (default: 9090).
+// For combined mode (metrics on same server), use WithMetricsCombined() instead.
 func WithMetrics(enabled bool) Option {
 	return func(a *App) {
 		if !enabled {
@@ -118,8 +120,9 @@ func WithMetrics(enabled bool) Option {
 		})
 		a.metricsRecorder = mdlw
 
-		// Update config to enable metrics server
+		// Update config to enable metrics server in SEPARATE mode (backward compatible)
 		a.Config.Metrics.Enabled = true
+		a.Config.Metrics.Mode = "separate" // Keep old behavior
 
 		// Enable metrics in the middleware stack
 		if a.middlewareStack != nil {
@@ -131,6 +134,78 @@ func WithMetrics(enabled bool) Option {
 				}
 			}
 		}
+	}
+}
+
+// WithMetricsCombined enables metrics on the main application server at the specified path.
+// This is simpler than separate mode as it only requires one port.
+// Default path is "/metrics" if not specified via WithMetricsPath().
+func WithMetricsCombined() Option {
+	return func(a *App) {
+		// Create metrics recorder
+		mdlw := metricsMiddleware.New(metricsMiddleware.Config{
+			Recorder: metrics.NewRecorder(metrics.Config{}),
+		})
+		a.metricsRecorder = mdlw
+
+		// Update config to enable metrics in COMBINED mode
+		a.Config.Metrics.Enabled = true
+		a.Config.Metrics.Mode = "combined"
+
+		// Enable metrics in the middleware stack
+		if a.middlewareStack != nil {
+			for i, item := range a.middlewareStack.items {
+				if item.Name == "metrics" {
+					a.middlewareStack.items[i].Enabled = true
+					a.middlewareStack.items[i].Middleware = metricsStd.HandlerProvider("", mdlw)
+					break
+				}
+			}
+		}
+	}
+}
+
+// WithMetricsSeparatePort enables metrics on a separate dedicated server.
+// This is useful for production environments where you want metrics isolated.
+func WithMetricsSeparatePort(port int) Option {
+	return func(a *App) {
+		// Create metrics recorder
+		mdlw := metricsMiddleware.New(metricsMiddleware.Config{
+			Recorder: metrics.NewRecorder(metrics.Config{}),
+		})
+		a.metricsRecorder = mdlw
+
+		// Update config to enable metrics in SEPARATE mode
+		a.Config.Metrics.Enabled = true
+		a.Config.Metrics.Mode = "separate"
+		a.Config.Metrics.Port = port
+
+		// Enable metrics in the middleware stack
+		if a.middlewareStack != nil {
+			for i, item := range a.middlewareStack.items {
+				if item.Name == "metrics" {
+					a.middlewareStack.items[i].Enabled = true
+					a.middlewareStack.items[i].Middleware = metricsStd.HandlerProvider("", mdlw)
+					break
+				}
+			}
+		}
+	}
+}
+
+// WithMetricsPath sets the endpoint path for metrics in combined mode.
+// Default is "/metrics". Only applies when using combined mode.
+func WithMetricsPath(path string) Option {
+	return func(a *App) {
+		a.Config.Metrics.Path = path
+	}
+}
+
+// WithMetricsMode explicitly sets the metrics mode.
+// Valid values: "combined" or "separate"
+func WithMetricsMode(mode string) Option {
+	return func(a *App) {
+		a.Config.Metrics.Mode = mode
 	}
 }
 
