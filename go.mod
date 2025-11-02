@@ -9,17 +9,16 @@ require (
 	github.com/getkin/kin-openapi v0.116.0
 	github.com/ggicci/httpin v0.10.1
 	github.com/go-chi/chi/v5 v5.0.11
-	github.com/go-chi/cors v1.2.1
 	github.com/go-chi/httplog/v2 v2.1.1
 	github.com/go-chi/render v1.0.2
 	github.com/go-pkgz/auth v1.20.0
 	github.com/google/uuid v1.3.0
 	github.com/ilyakaznacheev/cleanenv v1.4.0
-	github.com/lib/pq v1.10.7
 	github.com/lmittmann/tint v1.0.4
 	github.com/mikejav/gosts v0.0.0-20170827185855-76a026df1bc8
 	github.com/prometheus/client_golang v1.14.0
 	github.com/slok/go-http-metrics v0.10.0
+	github.com/tendant/cors v1.3.1
 	go.uber.org/zap v1.21.0
 	golang.org/x/exp v0.0.0-20231226003508-02704c960a9b
 	golang.org/x/oauth2 v0.0.0-20220909003341-f21342109be1

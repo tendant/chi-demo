@@ -19,3 +19,5 @@ cmd/openapi
 # vendor/
 
 dist/
+
+.claude/
