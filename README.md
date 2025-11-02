@@ -144,9 +144,7 @@ Available methods: `Add`, `Prepend`, `Append`, `InsertBefore`, `InsertAfter`, `R
 │   ├── logging.go    - Logger factories
 │   ├── routes.go     - Route helpers
 │   └── version.go    - Version middleware
-├── cmd/              - Example applications
-├── migrations/       - Database migrations
-└── dbconn/          - Database connection utilities
+└── cmd/              - Example applications
 ```
 
 ## Environment Variables
