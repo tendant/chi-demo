@@ -105,9 +105,9 @@ func WithDefaultCORS() Option {
 	return WithCORS(DefaultCorsOptions())
 }
 
-// WithMetrics enables and configures Prometheus metrics middleware in separate server mode.
-// This maintains backward compatibility - metrics will run on a separate port (default: 9090).
-// For combined mode (metrics on same server), use WithMetricsCombined() instead.
+// WithMetrics enables and configures Prometheus metrics middleware.
+// Uses combined mode by default (metrics on same server as app).
+// For separate server mode, use WithMetricsSeparatePort() instead.
 func WithMetrics(enabled bool) Option {
 	return func(a *App) {
 		if !enabled {
@@ -120,9 +120,9 @@ func WithMetrics(enabled bool) Option {
 		})
 		a.metricsRecorder = mdlw
 
-		// Update config to enable metrics server in SEPARATE mode (backward compatible)
+		// Update config to enable metrics in COMBINED mode (new default)
 		a.Config.Metrics.Enabled = true
-		a.Config.Metrics.Mode = "separate" // Keep old behavior
+		a.Config.Metrics.Mode = "combined" // New default: same server
 
 		// Enable metrics in the middleware stack
 		if a.middlewareStack != nil {

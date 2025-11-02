@@ -21,8 +21,8 @@ type AppConfig struct {
 // MetricsConfig represents metrics server configuration
 type MetricsConfig struct {
 	Enabled bool   `env:"METRICS_ENABLED" env-default:"false"`
-	Mode    string `env:"METRICS_MODE" env-default:"separate"` // "combined" or "separate"
-	Path    string `env:"METRICS_PATH" env-default:"/metrics"` // endpoint path for combined mode
+	Mode    string `env:"METRICS_MODE" env-default:"combined"` // "combined" or "separate"
+	Path    string `env:"METRICS_PATH" env-default:"/metrics"` // endpoint path
 	Host    string `env:"METRICS_HOST" env-default:"localhost"`
 	Port    int    `env:"METRICS_PORT" env-default:"9090"`
 }

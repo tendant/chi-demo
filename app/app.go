@@ -81,7 +81,7 @@ func NewApp(opts ...Option) *App {
 //   - Default logger based on APP_ENV
 //   - Default HTTP logger
 //   - CORS enabled with permissive defaults
-//   - Metrics enabled
+//   - Metrics disabled (enable with WithMetrics or WithMetricsCombined)
 //   - HSTS enabled
 //   - Httpin integration enabled
 //
@@ -92,7 +92,6 @@ func DefaultApp() *App {
 		WithLogger(DefaultLogger()),
 		WithHTTPLogger(DefaultHTTPLogger()),
 		WithDefaultCORS(),
-		WithMetrics(true),
 		WithDefaultHSTS(),
 		WithHttpin(true),
 	)

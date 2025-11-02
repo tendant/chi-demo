@@ -23,7 +23,7 @@ package main
 import "github.com/tendant/chi-demo/app"
 
 func main() {
-    server := app.DefaultApp()
+    server := app.DefaultApp()  // CORS, HSTS, logging enabled; metrics disabled
     server.Run()
 }
 ```
@@ -34,7 +34,7 @@ func main() {
 myApp := app.NewApp(
     app.WithPort(8080),
     app.WithDefaultCORS(),
-    app.WithMetricsCombined(),  // Metrics on same port
+    app.WithMetricsCombined(),  // Enable metrics on same port
 )
 
 myApp.R.Get("/hello", handleHello)
@@ -113,11 +113,11 @@ Available methods: `Add`, `Prepend`, `Append`, `InsertBefore`, `InsertAfter`, `R
 - `WithDefaultHSTS()` - HSTS with defaults
 
 **Metrics:**
-- `WithMetrics(bool)` - Enable metrics (separate mode, backward compatible)
-- `WithMetricsCombined()` - Metrics on main app server
-- `WithMetricsSeparatePort(port)` - Metrics on separate port
+- `WithMetrics(bool)` - Enable metrics (combined mode by default)
+- `WithMetricsCombined()` - Explicitly enable combined mode
+- `WithMetricsSeparatePort(port)` - Enable metrics on separate port
 - `WithMetricsPath(path)` - Custom metrics endpoint path
-- `WithMetricsMode(mode)` - Set mode explicitly
+- `WithMetricsMode(mode)` - Set mode explicitly ("combined" or "separate")
 
 **Router:**
 - `WithRouter(*chi.Mux)` - Use custom router
@@ -150,12 +150,12 @@ HOST=localhost
 PORT=3000
 USE_HTTPIN=false
 
-# Metrics
-METRICS_ENABLED=true
-METRICS_MODE=separate    # "combined" or "separate"
+# Metrics (disabled by default, combined mode when enabled)
+METRICS_ENABLED=false    # Set to true to enable
+METRICS_MODE=combined    # "combined" or "separate" (default: combined)
 METRICS_PATH=/metrics    # Endpoint path
-METRICS_HOST=localhost
-METRICS_PORT=9090
+METRICS_HOST=localhost   # Only used in separate mode
+METRICS_PORT=9090        # Only used in separate mode
 ```
 
 ---
@@ -176,10 +176,10 @@ METRICS_PORT=9090
 - Example: `DefaultMiddlewareStack().InsertAfter("request-id", "auth", authMW).Build()`
 
 **2. Dual Metrics Mode**
-- **Combined Mode**: Metrics on same port as app (simple, one port)
+- **Combined Mode**: Metrics on same port as app (default, simple, one port)
 - **Separate Mode**: Metrics on dedicated port (production, security)
 - Both modes support custom paths
-- Backward compatible with old API
+- Metrics disabled by default (opt-in)
 
 **3. Code Reduction**
 - `app.go`: 383 lines → 106 lines (72% reduction)
