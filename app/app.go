@@ -3,7 +3,7 @@ package app
 import (
 	"log/slog"
 
-	"github.com/ggicci/httpin"
+	httpin_integration "github.com/ggicci/httpin/integration"
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/httplog/v2"
 	"github.com/mikejav/gosts"
@@ -62,7 +62,7 @@ func NewApp(opts ...Option) *App {
 
 	// Configure httpin if enabled
 	if app.Config.UseHttpin {
-		httpin.UseGochiURLParam("path", chi.URLParam)
+		httpin_integration.UseGochiURLParam("path", chi.URLParam)
 	}
 
 	// Apply the middleware stack to the router
