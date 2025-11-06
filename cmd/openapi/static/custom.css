@@ -1,9 +1,0 @@
-/* Custom CSS  */
-
-.swagger-ui .topbar .download-url-wrapper .download-url-button {
-    background-color: #red !important;
-}
-
-.swagger-ui .topbar .download-url-wrapper input[type=text] {
-    border-color: #red !important;
-}
